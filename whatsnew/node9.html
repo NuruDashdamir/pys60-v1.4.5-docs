@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>8 PEP 227: Nested Scopes</title>
+<META NAME="description" CONTENT="8 PEP 227: Nested Scopes">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node10.html">
+<LINK REL="previous" HREF="node8.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node10.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node8.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node10.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node8.html">7 Unicode Changes</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node10.html">9 New and Improved</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000900000000000000000">
+8 PEP 227: Nested Scopes</A>
+</H1>
+
+<P>
+In Python 2.1, statically nested scopes were added as an optional
+feature, to be enabled by a <code>from __future__ import
+nested_scopes</code> directive.  In 2.2 nested scopes no longer need to be
+specially enabled, and are now always present.  The rest of this section
+is a copy of the description of nested scopes from my ``What's New in
+Python 2.1'' document; if you read it when 2.1 came out, you can skip
+the rest of this section.
+
+<P>
+The largest change introduced in Python 2.1, and made complete in 2.2,
+is to Python's scoping rules.  In Python 2.0, at any given time there
+are at most three namespaces used to look up variable names: local,
+module-level, and the built-in namespace.  This often surprised people
+because it didn't match their intuitive expectations.  For example, a
+nested recursive function definition doesn't work:
+
+<P>
+<dl><dd><pre class="verbatim">
+def f():
+    ...
+    def g(value):
+        ...
+        return g(value-1) + 1
+    ...
+</pre></dl>
+
+<P>
+The function <tt class="function">g()</tt> will always raise a <tt class="exception">NameError</tt>
+exception, because the binding of the name "<tt class="samp">g</tt>" isn't in either
+its local namespace or in the module-level namespace.  This isn't much
+of a problem in practice (how often do you recursively define interior
+functions like this?), but this also made using the <tt class="keyword">lambda</tt>
+statement clumsier, and this was a problem in practice.  In code which
+uses <tt class="keyword">lambda</tt> you can often find local variables being copied
+by passing them as the default values of arguments.
+
+<P>
+<dl><dd><pre class="verbatim">
+def find(self, name):
+    "Return list of any entries equal to 'name'"
+    L = filter(lambda x, name=name: x == name,
+               self.list_attribute)
+    return L
+</pre></dl>
+
+<P>
+The readability of Python code written in a strongly functional style
+suffers greatly as a result.
+
+<P>
+The most significant change to Python 2.2 is that static scoping has
+been added to the language to fix this problem.  As a first effect,
+the <code>name=name</code> default argument is now unnecessary in the above
+example.  Put simply, when a given variable name is not assigned a
+value within a function (by an assignment, or the <tt class="keyword">def</tt>,
+<tt class="keyword">class</tt>, or <tt class="keyword">import</tt> statements), references to the
+variable will be looked up in the local namespace of the enclosing
+scope.  A more detailed explanation of the rules, and a dissection of
+the implementation, can be found in the PEP.
+
+<P>
+This change may cause some compatibility problems for code where the
+same variable name is used both at the module level and as a local
+variable within a function that contains further function definitions.
+This seems rather unlikely though, since such code would have been
+pretty confusing to read in the first place.  
+
+<P>
+One side effect of the change is that the <code>from <var>module</var>
+import *</code> and <tt class="keyword">exec</tt> statements have been made illegal inside
+a function scope under certain conditions.  The Python reference
+manual has said all along that <code>from <var>module</var> import *</code> is
+only legal at the top level of a module, but the CPython interpreter
+has never enforced this before.  As part of the implementation of
+nested scopes, the compiler which turns Python source into bytecodes
+has to generate different code to access variables in a containing
+scope.  <code>from <var>module</var> import *</code> and <tt class="keyword">exec</tt> make it
+impossible for the compiler to figure this out, because they add names
+to the local namespace that are unknowable at compile time.
+Therefore, if a function contains function definitions or
+<tt class="keyword">lambda</tt> expressions with free variables, the compiler will
+flag this by raising a <tt class="exception">SyntaxError</tt> exception.
+
+<P>
+To make the preceding explanation a bit clearer, here's an example:
+
+<P>
+<dl><dd><pre class="verbatim">
+x = 1
+def f():
+    # The next line is a syntax error
+    exec 'x=2'  
+    def g():
+        return x
+</pre></dl>
+
+<P>
+Line 4 containing the <tt class="keyword">exec</tt> statement is a syntax error,
+since <tt class="keyword">exec</tt> would define a new local variable named "<tt class="samp">x</tt>"whose value should be accessed by <tt class="function">g()</tt>.  
+
+<P>
+This shouldn't be much of a limitation, since <tt class="keyword">exec</tt> is rarely
+used in most Python code (and when it is used, it's often a sign of a
+poor design anyway).
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+<P>
+<dl compact class="seerfc">
+    <dt><a href="http://www.python.org/peps/pep-0227.html"
+        title="Statically Nested Scopes"
+        >PEP 227, <em>Statically Nested Scopes</em></a>
+    <dd>Written and implemented by
+Jeremy Hylton.
+  </dl>
+
+<P>
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node8.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node10.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node8.html">7 Unicode Changes</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node10.html">9 New and Improved</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

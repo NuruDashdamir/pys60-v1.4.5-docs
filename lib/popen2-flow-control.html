@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>6.8.2 Flow Control Issues </title>
+<META NAME="description" CONTENT="6.8.2 Flow Control Issues ">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="popen3-objects.html">
+<LINK REL="up" href="module-popen2.html">
+<LINK REL="next" href="module-time.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="popen3-objects.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-popen2.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-time.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="popen3-objects.html">6.8.1 Popen3 and Popen4</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-popen2.html">6.8 popen2  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-time.html">6.9 time  </A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION008820000000000000000">&nbsp;</A>
+<BR>
+6.8.2 Flow Control Issues 
+</H2>
+
+<P>
+Any time you are working with any form of inter-process communication,
+control flow needs to be carefully thought out.  This remains the case
+with the file objects provided by this module (or the <tt class="module"><a href="module-os.html">os</a></tt>
+module equivalents).
+
+<P>
+When reading output from a child process that writes a lot of data to
+standard error while the parent is reading from the child's standard
+out, a dead lock can occur.  A similar situation can occur with other
+combinations of reads and writes.  The essential factors are that more
+than <tt class="constant">_PC_PIPE_BUF</tt> bytes are being written by one process in
+a blocking fashion, while the other process is reading from the other
+process, also in a blocking fashion.
+
+<P>
+There are several ways to deal with this situation.
+
+<P>
+The simplest application change, in many cases, will be to follow this
+model in the parent process:
+
+<P>
+<dl><dd><pre class="verbatim">
+import popen2
+
+r, w, e = popen2.popen3('python slave.py')
+e.readlines()
+r.readlines()
+r.close()
+e.close()
+w.close()
+</pre></dl>
+
+<P>
+with code like this in the child:
+
+<P>
+<dl><dd><pre class="verbatim">
+import os
+import sys
+
+# note that each of these print statements
+# writes a single long string
+
+print &gt;&gt;sys.stderr, 400 * 'this is a test\n'
+os.close(sys.stderr.fileno())
+print &gt;&gt;sys.stdout, 400 * 'this is another test\n'
+</pre></dl>
+
+<P>
+In particular, note that <code>sys.stderr</code> must be closed after
+writing all data, or <tt class="method">readlines()</tt> won't return.  Also note
+that <tt class="function">os.close()</tt> must be used, as <code>sys.stderr.close()</code>
+won't close <code>stderr</code> (otherwise assigning to <code>sys.stderr</code>
+will silently close it, so no further errors can be printed).
+
+<P>
+Applications which need to support a more general approach should
+integrate I/O over pipes with their <tt class="function">select()</tt> loops, or use
+separate threads to read each of the individual files provided by
+whichever <tt class="function">popen*()</tt> function or <tt class="class">Popen*</tt> class was
+used.
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="popen3-objects.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-popen2.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-time.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="popen3-objects.html">6.8.1 Popen3 and Popen4</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-popen2.html">6.8 popen2  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-time.html">6.9 time  </A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

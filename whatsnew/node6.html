@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>5 PEP 237: Unifying Long Integers and Integers</title>
+<META NAME="description" CONTENT="5 PEP 237: Unifying Long Integers and Integers">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node7.html">
+<LINK REL="previous" HREF="node5.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node7.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node5.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node7.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node5.html">4 PEP 255: Simple</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node7.html">6 PEP 238: Changing</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000600000000000000000">
+5 PEP 237: Unifying Long Integers and Integers</A>
+</H1>
+
+<P>
+In recent versions, the distinction between regular integers, which
+are 32-bit values on most machines, and long integers, which can be of
+arbitrary size, was becoming an annoyance.  For example, on platforms
+that support files larger than <code>2**32</code> bytes, the
+<tt class="method">tell()</tt> method of file objects has to return a long integer.
+However, there were various bits of Python that expected plain
+integers and would raise an error if a long integer was provided
+instead.  For example, in Python 1.5, only regular integers
+could be used as a slice index, and <code>'abc'[1L:]</code> would raise a
+<tt class="exception">TypeError</tt> exception with the message 'slice index must be
+int'.
+
+<P>
+Python 2.2 will shift values from short to long integers as required.
+The 'L' suffix is no longer needed to indicate a long integer literal,
+as now the compiler will choose the appropriate type.  (Using the 'L'
+suffix will be discouraged in future 2.x versions of Python,
+triggering a warning in Python 2.4, and probably dropped in Python
+3.0.)  Many operations that used to raise an <tt class="exception">OverflowError</tt>
+will now return a long integer as their result.  For example:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; 1234567890123
+1234567890123L
+&gt;&gt;&gt; 2 ** 64
+18446744073709551616L
+</pre></dl>
+
+<P>
+In most cases, integers and long integers will now be treated
+identically.  You can still distinguish them with the
+<tt class="function">type()</tt> built-in function, but that's rarely needed.  
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+<P>
+<dl compact class="seerfc">
+    <dt><a href="http://www.python.org/peps/pep-0237.html"
+        title="Unifying Long Integers and Integers"
+        >PEP 237, <em>Unifying Long Integers and Integers</em></a>
+    <dd>Written by
+Moshe Zadka and Guido van Rossum.  Implemented mostly by Guido van
+Rossum.
+  </dl>
+
+<P>
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node5.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node7.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node5.html">4 PEP 255: Simple</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node7.html">6 PEP 238: Changing</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

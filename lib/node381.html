@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>12.2.1.1 Deprecated methods</title>
+<META NAME="description" CONTENT="12.2.1.1 Deprecated methods">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="module-email.Message.html">
+<LINK REL="up" href="module-email.Message.html">
+<LINK REL="next" href="module-email.Parser.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Message.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.Message.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Parser.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Message.html">12.2.1 Representing an email</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.Message.html">12.2.1 Representing an email</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Parser.html">12.2.2 Parsing email messages</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H3><A NAME="SECTION0014211000000000000000">
+12.2.1.1 Deprecated methods</A>
+</H3>
+
+<P>
+The following methods are deprecated in <tt class="module">email</tt> version 2.
+They are documented here for completeness.
+
+<P>
+<dl><dt><b><a name="l2h-2843"><tt class="method">add_payload</tt></a></b>(<var>payload</var>)
+<dd>
+Add <var>payload</var> to the message object's existing payload.  If, prior
+to calling this method, the object's payload was <code>None</code>
+(i.e. never before set), then after this method is called, the payload
+will be the argument <var>payload</var>.
+
+<P>
+If the object's payload was already a list
+(i.e. <tt class="method">is_multipart()</tt> returns 1), then <var>payload</var> is
+appended to the end of the existing payload list.
+
+<P>
+For any other type of existing payload, <tt class="method">add_payload()</tt> will
+transform the new payload into a list consisting of the old payload
+and <var>payload</var>, but only if the document is already a MIME
+multipart document.  This condition is satisfied if the message's
+<span class="mailheader">Content-Type:</span> header's main type is either
+<span class="mimetype">multipart</span>, or there is no <span class="mailheader">Content-Type:</span>
+header.  In any other situation,
+<tt class="exception">MultipartConversionError</tt> is raised.
+
+<P>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use the <tt class="method">attach()</tt> method instead.</div><p>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2844"><tt class="method">get_type</tt></a></b>(<big>[</big><var>failobj</var><big>]</big>)
+<dd>
+Return the message's content type, as a string of the form
+<span class="mimetype">maintype/subtype</span> as taken from the
+<span class="mailheader">Content-Type:</span> header.
+The returned string is coerced to lowercase.
+
+<P>
+If there is no <span class="mailheader">Content-Type:</span> header in the message,
+<var>failobj</var> is returned (defaults to <code>None</code>).
+
+<P>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use the <tt class="method">get_content_type()</tt> method instead.</div><p>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2845"><tt class="method">get_main_type</tt></a></b>(<big>[</big><var>failobj</var><big>]</big>)
+<dd>
+Return the message's <i>main</i> content type.  This essentially returns the
+<var>maintype</var> part of the string returned by <tt class="method">get_type()</tt>, with the
+same semantics for <var>failobj</var>.
+
+<P>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use the <tt class="method">get_content_maintype()</tt> method instead.</div><p>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2846"><tt class="method">get_subtype</tt></a></b>(<big>[</big><var>failobj</var><big>]</big>)
+<dd>
+Return the message's sub-content type.  This essentially returns the
+<var>subtype</var> part of the string returned by <tt class="method">get_type()</tt>, with the
+same semantics for <var>failobj</var>.
+
+<P>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use the <tt class="method">get_content_subtype()</tt> method instead.</div><p>
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Message.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.Message.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Parser.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Message.html">12.2.1 Representing an email</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.Message.html">12.2.1 Representing an email</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Parser.html">12.2.2 Parsing email messages</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

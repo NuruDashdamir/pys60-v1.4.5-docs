@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>12.2.5 Internationalized headers</title>
+<META NAME="description" CONTENT="12.2.5 Internationalized headers">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" href="module-email.Charset.html">
+<LINK REL="previous" HREF="node387.html">
+<LINK REL="up" href="module-email.html">
+<LINK REL="next" href="module-email.Charset.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node387.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Charset.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node387.html">12.2.4 Creating email and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Charset.html">12.2.6 Representing character sets</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0014250000000000000000">
+12.2.5 Internationalized headers</A>
+</H2>
+
+
+<P>
+<a class="rfc" name="rfcref-65661"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a> is the base standard that describes the format of email
+messages.  It derives from the older <a class="rfc" name="rfcref-65663"
+href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a> standard which came
+into widespread use at a time when most email was composed of ASCII
+characters only.  <a class="rfc" name="rfcref-65665"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a> is a specification written assuming email
+contains only 7-bit ASCII characters.
+
+<P>
+Of course, as email has been deployed worldwide, it has become
+internationalized, such that language specific character sets can now
+be used in email messages.  The base standard still requires email
+messages to be transfered using only 7-bit ASCII characters, so a
+slew of RFCs have been written describing how to encode email
+containing non-ASCII characters into <a class="rfc" name="rfcref-65667"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>-compliant format.
+These RFCs include <a class="rfc" name="rfcref-65669"
+href="http://www.faqs.org/rfcs/rfc2045.html">RFC 2045</a>, <a class="rfc" name="rfcref-65671"
+href="http://www.faqs.org/rfcs/rfc2046.html">RFC 2046</a>, <a class="rfc" name="rfcref-65673"
+href="http://www.faqs.org/rfcs/rfc2047.html">RFC 2047</a>, and <a class="rfc" name="rfcref-65675"
+href="http://www.faqs.org/rfcs/rfc2231.html">RFC 2231</a>.
+The <tt class="module">email</tt> package supports these standards in its
+<tt class="module">email.Header</tt> and <tt class="module">email.Charset</tt> modules.
+
+<P>
+If you want to include non-ASCII characters in your email headers,
+say in the <span class="mailheader">Subject:</span> or <span class="mailheader">To:</span> fields, you should
+use the <tt class="class">Header</tt> class and assign the field in the
+<tt class="class">Message</tt> object to an instance of <tt class="class">Header</tt> instead of
+using a string for the header value.  For example:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; from email.Message import Message
+&gt;&gt;&gt; from email.Header import Header
+&gt;&gt;&gt; msg = Message()
+&gt;&gt;&gt; h = Header('p\xf6stal', 'iso-8859-1')
+&gt;&gt;&gt; msg['Subject'] = h
+&gt;&gt;&gt; print msg.as_string()
+Subject: =?iso-8859-1?q?p=F6stal?=
+</pre></dl>
+
+<P>
+Notice here how we wanted the <span class="mailheader">Subject:</span> field to contain a
+non-ASCII character?  We did this by creating a <tt class="class">Header</tt>
+instance and passing in the character set that the byte string was
+encoded in.  When the subsequent <tt class="class">Message</tt> instance was
+flattened, the <span class="mailheader">Subject:</span> field was properly <a class="rfc" name="rfcref-65677"
+href="http://www.faqs.org/rfcs/rfc2047.html">RFC 2047</a>
+encoded.  MIME-aware mail readers would show this header using the
+embedded ISO-8859-1 character.
+
+<P>
+
+<span class="versionnote">New in version 2.2.2.</span>
+
+<P>
+Here is the <tt class="class">Header</tt> class description:
+
+<P>
+<dl><dt><b><span class="typelabel">class</span> <a name="l2h-2868"><tt class="class">Header</tt></a></b>(<big>[</big><var>s</var><big>[</big><var>, charset</var><big>[</big><var>,
+    maxlinelen</var><big>[</big><var>, header_name</var><big>[</big><var>, continuation_ws</var><big>]</big><big>]</big><big>]</big><big>]</big><big>]</big>)
+<dd>
+Create a MIME-compliant header that can contain strings in different
+character sets.
+
+<P>
+Optional <var>s</var> is the initial header value.  If <code>None</code> (the
+default), the initial header value is not set.  You can later append
+to the header with <tt class="method">append()</tt> method calls.  <var>s</var> may be a
+byte string or a Unicode string, but see the <tt class="method">append()</tt>
+documentation for semantics.
+
+<P>
+Optional <var>charset</var> serves two purposes: it has the same meaning as
+the <var>charset</var> argument to the <tt class="method">append()</tt> method.  It also
+sets the default character set for all subsequent <tt class="method">append()</tt>
+calls that omit the <var>charset</var> argument.  If <var>charset</var> is not
+provided in the constructor (the default), the <code>us-ascii</code>
+character set is used both as <var>s</var>'s initial charset and as the
+default for subsequent <tt class="method">append()</tt> calls.
+
+<P>
+The maximum line length can be specified explicit via
+<var>maxlinelen</var>.  For splitting the first line to a shorter value (to
+account for the field header which isn't included in <var>s</var>,
+e.g. <span class="mailheader">Subject:</span>) pass in the name of the field in
+<var>header_name</var>.  The default <var>maxlinelen</var> is 76, and the
+default value for <var>header_name</var> is <code>None</code>, meaning it is not
+taken into account for the first line of a long, split header.
+
+<P>
+Optional <var>continuation_ws</var> must be <a class="rfc" name="rfcref-65679"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>-compliant folding
+whitespace, and is usually either a space or a hard tab character.
+This character will be prepended to continuation lines.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2869"><tt class="method">append</tt></a></b>(<var>s</var><big>[</big><var>, charset</var><big>]</big>)
+<dd>
+Append the string <var>s</var> to the MIME header.
+
+<P>
+Optional <var>charset</var>, if given, should be a <tt class="class">Charset</tt> instance
+(see <tt class="module"><a href="module-email.Charset.html">email.Charset</a></tt>) or the name of a character set, which
+will be converted to a <tt class="class">Charset</tt> instance.  A value of
+<code>None</code> (the default) means that the <var>charset</var> given in the
+constructor is used.
+
+<P>
+<var>s</var> may be a byte string or a Unicode string.  If it is a byte
+string (i.e. <code>isinstance(s, str)</code> is true), then
+<var>charset</var> is the encoding of that byte string, and a
+<tt class="exception">UnicodeError</tt> will be raised if the string cannot be
+decoded with that character set.
+
+<P>
+If <var>s</var> is a Unicode string, then <var>charset</var> is a hint
+specifying the character set of the characters in the string.  In this
+case, when producing an <a class="rfc" name="rfcref-65681"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>-compliant header using <a class="rfc" name="rfcref-65683"
+href="http://www.faqs.org/rfcs/rfc2047.html">RFC 2047</a>
+rules, the Unicode string will be encoded using the following charsets
+in order: <code>us-ascii</code>, the <var>charset</var> hint, <code>utf-8</code>.  The
+first character set to not provoke a <tt class="exception">UnicodeError</tt> is used.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2870"><tt class="method">encode</tt></a></b>()
+<dd>
+Encode a message header into an RFC-compliant format, possibly
+wrapping long lines and encapsulating non-ASCII parts in base64 or
+quoted-printable encodings.
+</dl>
+
+<P>
+The <tt class="class">Header</tt> class also provides a number of methods to support
+standard operators and built-in functions.
+
+<P>
+<dl><dt><b><a name="l2h-2871"><tt class="method">__str__</tt></a></b>()
+<dd>
+A synonym for <tt class="method">Header.encode()</tt>.  Useful for
+<code>str(aHeader)</code>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2872"><tt class="method">__unicode__</tt></a></b>()
+<dd>
+A helper for the built-in <tt class="function">unicode()</tt> function.  Returns the
+header as a Unicode string.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2873"><tt class="method">__eq__</tt></a></b>(<var>other</var>)
+<dd>
+This method allows you to compare two <tt class="class">Header</tt> instances for equality.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2874"><tt class="method">__ne__</tt></a></b>(<var>other</var>)
+<dd>
+This method allows you to compare two <tt class="class">Header</tt> instances for inequality.
+</dl>
+
+<P>
+The <tt class="module">email.Header</tt> module also provides the following
+convenient functions.
+
+<P>
+<dl><dt><b><a name="l2h-2875"><tt class="function">decode_header</tt></a></b>(<var>header</var>)
+<dd>
+Decode a message header value without converting the character set.
+The header value is in <var>header</var>.
+
+<P>
+This function returns a list of <code>(decoded_string, charset)</code> pairs
+containing each of the decoded parts of the header.  <var>charset</var> is
+<code>None</code> for non-encoded parts of the header, otherwise a lower
+case string containing the name of the character set specified in the
+encoded string.
+
+<P>
+Here's an example:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; from email.Header import decode_header
+&gt;&gt;&gt; decode_header('=?iso-8859-1?q?p=F6stal?=')
+[('p\\xf6stal', 'iso-8859-1')]
+</pre></dl>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2876"><tt class="function">make_header</tt></a></b>(<var>decoded_seq</var><big>[</big><var>, maxlinelen</var><big>[</big><var>,
+    header_name</var><big>[</big><var>, continuation_ws</var><big>]</big><big>]</big><big>]</big>)
+<dd>
+Create a <tt class="class">Header</tt> instance from a sequence of pairs as returned
+by <tt class="function">decode_header()</tt>.
+
+<P>
+<tt class="function">decode_header()</tt> takes a header value string and returns a
+sequence of pairs of the format <code>(decoded_string, charset)</code> where
+<var>charset</var> is the name of the character set.
+
+<P>
+This function takes one of those sequence of pairs and returns a
+<tt class="class">Header</tt> instance.  Optional <var>maxlinelen</var>,
+<var>header_name</var>, and <var>continuation_ws</var> are as in the
+<tt class="class">Header</tt> constructor.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node387.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Charset.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node387.html">12.2.4 Creating email and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Charset.html">12.2.6 Representing character sets</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>6 PEP 238: Changing the Division Operator</title>
+<META NAME="description" CONTENT="6 PEP 238: Changing the Division Operator">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node8.html">
+<LINK REL="previous" HREF="node6.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node8.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node6.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node8.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node6.html">5 PEP 237: Unifying</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node8.html">7 Unicode Changes</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000700000000000000000">
+6 PEP 238: Changing the Division Operator</A>
+</H1>
+
+<P>
+The most controversial change in Python 2.2 heralds the start of an effort
+to fix an old design flaw that's been in Python from the beginning.
+Currently Python's division operator, <code>/</code>, behaves like C's
+division operator when presented with two integer arguments: it
+returns an integer result that's truncated down when there would be
+a fractional part.  For example, <code>3/2</code> is 1, not 1.5, and
+<code>(-1)/2</code> is -1, not -0.5.  This means that the results of divison
+can vary unexpectedly depending on the type of the two operands and
+because Python is dynamically typed, it can be difficult to determine
+the possible types of the operands.
+
+<P>
+(The controversy is over whether this is <i>really</i> a design flaw,
+and whether it's worth breaking existing code to fix this.  It's
+caused endless discussions on python-dev, and in July 2001 erupted into an
+storm of acidly sarcastic postings on <a class="newsgroup" href="news:comp.lang.python">comp.lang.python</a>. I
+won't argue for either side here and will stick to describing what's 
+implemented in 2.2.  Read <a class="rfc" name="rfcref-1174"
+href="http://www.python.org/peps/pep-0238.html">PEP 238</a> for a summary of arguments and
+counter-arguments.)  
+
+<P>
+Because this change might break code, it's being introduced very
+gradually.  Python 2.2 begins the transition, but the switch won't be
+complete until Python 3.0.
+
+<P>
+First, I'll borrow some terminology from <a class="rfc" name="rfcref-1176"
+href="http://www.python.org/peps/pep-0238.html">PEP 238</a>.  ``True division'' is the
+division that most non-programmers are familiar with: 3/2 is 1.5, 1/4
+is 0.25, and so forth.  ``Floor division'' is what Python's <code>/</code>
+operator currently does when given integer operands; the result is the
+floor of the value returned by true division.  ``Classic division'' is
+the current mixed behaviour of <code>/</code>; it returns the result of
+floor division when the operands are integers, and returns the result
+of true division when one of the operands is a floating-point number.
+
+<P>
+Here are the changes 2.2 introduces:
+
+<P>
+
+<UL>
+<LI>A new operator, <code>//</code>, is the floor division operator.
+(Yes, we know it looks like C++'s comment symbol.)  <code>//</code>
+<i>always</i> performs floor division no matter what the types of
+its operands are, so <code>1 // 2</code> is 0 and <code>1.0 // 2.0</code> is also
+0.0.
+
+<P>
+<code>//</code> is always available in Python 2.2; you don't need to enable
+it using a <code>__future__</code> statement.  
+
+<P>
+</LI>
+<LI>By including a <code>from __future__ import division</code> in a
+module, the <code>/</code> operator will be changed to return the result of
+true division, so <code>1/2</code> is 0.5.  Without the <code>__future__</code>
+statement, <code>/</code> still means classic division.  The default meaning
+of <code>/</code> will not change until Python 3.0.  
+
+<P>
+</LI>
+<LI>Classes can define methods called <tt class="method">__truediv__</tt> and
+<tt class="method">__floordiv__</tt> to overload the two division operators.  At the
+C level, there are also slots in the <tt class="ctype">PyNumberMethods</tt> structure
+so extension types can define the two operators.
+
+<P>
+</LI>
+<LI>Python 2.2 supports some command-line arguments for testing
+whether code will works with the changed division semantics.  Running
+python with <b class="programopt">-Q warn</b> will cause a warning to be issued
+whenever division is applied to two integers.  You can use this to
+find code that's affected by the change and fix it.  By default,
+Python 2.2 will simply perform classic division without a warning; the
+warning will be turned on by default in Python 2.3.
+
+<P>
+</LI>
+</UL>
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+<P>
+<dl compact class="seerfc">
+    <dt><a href="http://www.python.org/peps/pep-0238.html"
+        title="Changing the Division Operator"
+        >PEP 238, <em>Changing the Division Operator</em></a>
+    <dd>Written by Moshe Zadka and 
+Guido van Rossum.  Implemented by Guido van Rossum..
+  </dl>
+
+<P>
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node6.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node8.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node6.html">5 PEP 237: Unifying</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node8.html">7 Unicode Changes</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

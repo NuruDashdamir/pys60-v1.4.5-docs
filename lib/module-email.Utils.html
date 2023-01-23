@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>12.2.9 Miscellaneous utilities</title>
+<META NAME="description" CONTENT="12.2.9 Miscellaneous utilities">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" href="module-email.Iterators.html">
+<LINK REL="previous" href="module-email.Errors.html">
+<LINK REL="up" href="module-email.html">
+<LINK REL="next" href="module-email.Iterators.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Errors.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Iterators.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Errors.html">12.2.8 Exception classes</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Iterators.html">12.2.10 Iterators</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0014290000000000000000">
+12.2.9 Miscellaneous utilities</A>
+</H2>
+
+
+<P>
+There are several useful utilities provided with the <tt class="module">email</tt>
+package.
+
+<P>
+<dl><dt><b><a name="l2h-2911"><tt class="function">quote</tt></a></b>(<var>str</var>)
+<dd>
+Return a new string with backslashes in <var>str</var> replaced by two
+backslashes, and double quotes replaced by backslash-double quote.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2912"><tt class="function">unquote</tt></a></b>(<var>str</var>)
+<dd>
+Return a new string which is an <i>unquoted</i> version of <var>str</var>.
+If <var>str</var> ends and begins with double quotes, they are stripped
+off.  Likewise if <var>str</var> ends and begins with angle brackets, they
+are stripped off.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2913"><tt class="function">parseaddr</tt></a></b>(<var>address</var>)
+<dd>
+Parse address - which should be the value of some address-containing
+field such as <span class="mailheader">To:</span> or <span class="mailheader">Cc:</span> - into its constituent
+<i>realname</i> and <i>email address</i> parts.  Returns a tuple of that
+information, unless the parse fails, in which case a 2-tuple of
+<code>('', '')</code> is returned.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2914"><tt class="function">formataddr</tt></a></b>(<var>pair</var>)
+<dd>
+The inverse of <tt class="method">parseaddr()</tt>, this takes a 2-tuple of the form
+<code>(realname, email_address)</code> and returns the string value suitable
+for a <span class="mailheader">To:</span> or <span class="mailheader">Cc:</span> header.  If the first element of
+<var>pair</var> is false, then the second element is returned unmodified.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2915"><tt class="function">getaddresses</tt></a></b>(<var>fieldvalues</var>)
+<dd>
+This method returns a list of 2-tuples of the form returned by
+<code>parseaddr()</code>.  <var>fieldvalues</var> is a sequence of header field
+values as might be returned by <tt class="method">Message.get_all()</tt>.  Here's a
+simple example that gets all the recipients of a message:
+
+<P>
+<dl><dd><pre class="verbatim">
+from email.Utils import getaddresses
+
+tos = msg.get_all('to', [])
+ccs = msg.get_all('cc', [])
+resent_tos = msg.get_all('resent-to', [])
+resent_ccs = msg.get_all('resent-cc', [])
+all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
+</pre></dl>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2916"><tt class="function">parsedate</tt></a></b>(<var>date</var>)
+<dd>
+Attempts to parse a date according to the rules in <a class="rfc" name="rfcref-65754"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>.
+however, some mailers don't follow that format as specified, so
+<tt class="function">parsedate()</tt> tries to guess correctly in such cases. 
+<var>date</var> is a string containing an <a class="rfc" name="rfcref-65756"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a> date, such as 
+<code>"Mon, 20 Nov 1995 19:12:08 -0500"</code>.  If it succeeds in parsing
+the date, <tt class="function">parsedate()</tt> returns a 9-tuple that can be passed
+directly to <tt class="function">time.mktime()</tt>; otherwise <code>None</code> will be
+returned.  Note that fields 6, 7, and 8 of the result tuple are not
+usable.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2917"><tt class="function">parsedate_tz</tt></a></b>(<var>date</var>)
+<dd>
+Performs the same function as <tt class="function">parsedate()</tt>, but returns
+either <code>None</code> or a 10-tuple; the first 9 elements make up a tuple
+that can be passed directly to <tt class="function">time.mktime()</tt>, and the tenth
+is the offset of the date's timezone from UTC (which is the official
+term for Greenwich Mean Time)<A NAME="tex2html101"
+  HREF="#foot38023"><SUP>12.2</SUP></A>.  If the input
+string has no timezone, the last element of the tuple returned is
+<code>None</code>.  Note that fields 6, 7, and 8 of the result tuple are not
+usable.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2918"><tt class="function">mktime_tz</tt></a></b>(<var>tuple</var>)
+<dd>
+Turn a 10-tuple as returned by <tt class="function">parsedate_tz()</tt> into a UTC
+timestamp.  It the timezone item in the tuple is <code>None</code>, assume
+local time.  Minor deficiency: <tt class="function">mktime_tz()</tt> interprets the
+first 8 elements of <var>tuple</var> as a local time and then compensates
+for the timezone difference.  This may yield a slight error around
+changes in daylight savings time, though not worth worrying about for
+common use.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2919"><tt class="function">formatdate</tt></a></b>(<big>[</big><var>timeval</var><big>[</big><var>, localtime</var><big>]</big><big>]</big>)
+<dd>
+Returns a date string as per <a class="rfc" name="rfcref-65758"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>, e.g.:
+
+<P>
+<dl><dd><pre class="verbatim">
+Fri, 09 Nov 2001 01:08:47 -0000
+</pre></dl>
+
+<P>
+Optional <var>timeval</var> if given is a floating point time value as
+accepted by <tt class="function">time.gmtime()</tt> and <tt class="function">time.localtime()</tt>,
+otherwise the current time is used.
+
+<P>
+Optional <var>localtime</var> is a flag that when <code>True</code>, interprets
+<var>timeval</var>, and returns a date relative to the local timezone
+instead of UTC, properly taking daylight savings time into account.
+The default is <code>False</code> meaning UTC is used.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2920"><tt class="function">make_msgid</tt></a></b>(<big>[</big><var>idstring</var><big>]</big>)
+<dd>
+Returns a string suitable for an <a class="rfc" name="rfcref-65760"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>-compliant
+<span class="mailheader">Message-ID:</span> header.  Optional <var>idstring</var> if given, is
+a string used to strengthen the uniqueness of the message id.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2921"><tt class="function">decode_rfc2231</tt></a></b>(<var>s</var>)
+<dd>
+Decode the string <var>s</var> according to <a class="rfc" name="rfcref-65762"
+href="http://www.faqs.org/rfcs/rfc2231.html">RFC 2231</a>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2922"><tt class="function">encode_rfc2231</tt></a></b>(<var>s</var><big>[</big><var>, charset</var><big>[</big><var>, language</var><big>]</big><big>]</big>)
+<dd>
+Encode the string <var>s</var> according to <a class="rfc" name="rfcref-65764"
+href="http://www.faqs.org/rfcs/rfc2231.html">RFC 2231</a>.  Optional
+<var>charset</var> and <var>language</var>, if given is the character set name
+and language name to use.  If neither is given, <var>s</var> is returned
+as-is.  If <var>charset</var> is given but <var>language</var> is not, the
+string is encoded using the empty string for <var>language</var>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2923"><tt class="function">decode_params</tt></a></b>(<var>params</var>)
+<dd>
+Decode parameters list according to <a class="rfc" name="rfcref-65766"
+href="http://www.faqs.org/rfcs/rfc2231.html">RFC 2231</a>.  <var>params</var> is a
+sequence of 2-tuples containing elements of the form
+<code>(content-type, string-value)</code>.
+</dl>
+
+<P>
+The following functions have been deprecated:
+
+<P>
+<dl><dt><b><a name="l2h-2924"><tt class="function">dump_address_pair</tt></a></b>(<var>pair</var>)
+<dd>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use <tt class="function">formataddr()</tt> instead.</div><p>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2925"><tt class="function">decode</tt></a></b>(<var>s</var>)
+<dd>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use <tt class="method">Header.decode_header()</tt> instead.</div><p>
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2926"><tt class="function">encode</tt></a></b>(<var>s</var><big>[</big><var>, charset</var><big>[</big><var>, encoding</var><big>]</big><big>]</big>)
+<dd>
+<div class="versionnote"><b>Deprecated since release 2.2.2.</b>
+Use <tt class="method">Header.encode()</tt> instead.</div><p>
+</dl>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot38023">... Time)</A><A NAME="foot38023"
+ href="module-email.Utils.html#tex2html101"><SUP>12.2</SUP></A>
+<DD>Note that the sign of the timezone
+offset is the opposite of the sign of the <code>time.timezone</code>
+variable for the same timezone; the latter variable follows the
+POSIX standard while this module follows <a class="rfc" name="rfcref-65743"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>.
+
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Errors.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-email.Iterators.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Errors.html">12.2.8 Exception classes</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-email.Iterators.html">12.2.10 Iterators</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

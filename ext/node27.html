@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>2.2.5 Abstract Protocol Support</title>
+<META NAME="description" CONTENT="2.2.5 Abstract Protocol Support">
+<META NAME="keywords" CONTENT="ext">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ext.css">
+<link rel="first" href="ext.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node28.html">
+<LINK REL="previous" HREF="node26.html">
+<LINK REL="up" href="dnt-type-methods.html">
+<LINK REL="next" HREF="node28.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node26.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="dnt-type-methods.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node28.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node26.html">2.2.4 Object Comparison</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="dnt-type-methods.html">2.2 Type Methods</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node28.html">2.2.6 More Suggestions</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION004250000000000000000">
+2.2.5 Abstract Protocol Support</A>
+</H2>
+
+<P>
+Python supports a variety of <i>abstract</i> `protocols;' the specific
+interfaces provided to use these interfaces are documented in the
+<em class="citetitle"><a
+ href="../api/api.html"
+ title="Python/C API Reference Manual"
+ >Python/C API Reference Manual</a></em> in the
+chapter ``<a class="ulink" href="../api/abstract.html"
+  >Abstract Objects Layer</a>.''
+
+<P>
+A number of these abstract interfaces were defined early in the
+development of the Python implementation.  In particular, the number,
+mapping, and sequence protocols have been part of Python since the
+beginning.  Other protocols have been added over time.  For protocols
+which depend on several handler routines from the type implementation,
+the older protocols have been defined as optional blocks of handlers
+referenced by the type object, while newer protocols have been added
+using additional slots in the main type object, with a flag bit being
+set to indicate that the slots are present.  (The flag bit does not
+indicate that the slot values are non-<tt class="constant">NULL</tt>.)
+
+<P>
+<dl><dd><pre class="verbatim">
+    PyNumberMethods   tp_as_number;
+    PySequenceMethods tp_as_sequence;
+    PyMappingMethods  tp_as_mapping;
+</pre></dl>
+
+<P>
+If you wish your object to be able to act like a number, a sequence,
+or a mapping object, then you place the address of a structure that
+implements the C type <tt class="ctype">PyNumberMethods</tt>,
+<tt class="ctype">PySequenceMethods</tt>, or <tt class="ctype">PyMappingMethods</tt>, respectively.
+It is up to you to fill in this structure with appropriate values. You
+can find examples of the use of each of these in the <span class="file">Objects</span>
+directory of the Python source distribution.
+
+<P>
+<dl><dd><pre class="verbatim">
+    hashfunc tp_hash;
+</pre></dl>
+
+<P>
+This function, if you choose to provide it, should return a hash
+number for an instance of your datatype. Here is a moderately
+pointless example:
+
+<P>
+<dl><dd><pre class="verbatim">
+static long
+newdatatype_hash(newdatatypeobject *obj)
+{
+    long result;
+    result = obj-&gt;obj_UnderlyingDatatypePtr-&gt;size;
+    result = result * 3;
+    return result;
+}
+</pre></dl>
+
+<P>
+<dl><dd><pre class="verbatim">
+    ternaryfunc tp_call;
+</pre></dl>
+
+<P>
+This function is called when an instance of your datatype is "called",
+for example, if <code>obj1</code> is an instance of your datatype and the Python
+script contains <code>obj1('hello')</code>, the <tt class="member">tp_call</tt> handler is
+invoked.
+
+<P>
+This function takes three arguments:
+
+<P>
+
+<OL>
+<LI><var>arg1</var> is the instance of the datatype which is the subject of
+    the call. If the call is <code>obj1('hello')</code>, then <var>arg1</var> is
+    <code>obj1</code>.
+
+<P>
+</LI>
+<LI><var>arg2</var> is a tuple containing the arguments to the call.  You
+    can use <tt class="cfunction">PyArg_ParseTuple()</tt> to extract the arguments.
+
+<P>
+</LI>
+<LI><var>arg3</var> is a dictionary of keyword arguments that were passed.
+    If this is non-<tt class="constant">NULL</tt> and you support keyword arguments, use
+    <tt class="cfunction">PyArg_ParseTupleAndKeywords()</tt> to extract the
+    arguments.  If you do not want to support keyword arguments and
+    this is non-<tt class="constant">NULL</tt>, raise a <tt class="exception">TypeError</tt> with a message
+    saying that keyword arguments are not supported.
+</LI>
+</OL>
+
+<P>
+Here is a desultory example of the implementation of the call function.
+
+<P>
+<dl><dd><pre class="verbatim">
+/* Implement the call function.
+ *    obj1 is the instance receiving the call.
+ *    obj2 is a tuple containing the arguments to the call, in this
+ *         case 3 strings.
+ */
+static PyObject *
+newdatatype_call(newdatatypeobject *obj, PyObject *args, PyObject *other)
+{
+    PyObject *result;
+    char *arg1;
+    char *arg2;
+    char *arg3;
+
+    if (!PyArg_ParseTuple(args, "sss:call", &amp;arg1, &amp;arg2, &amp;arg3)) {
+        return NULL;
+    }
+    result = PyString_FromFormat(
+        "Returning -- value: [\%d] arg1: [\%s] arg2: [\%s] arg3: [\%s]\n",
+        obj-&gt;obj_UnderlyingDatatypePtr-&gt;size,
+        arg1, arg2, arg3);
+    printf("\%s", PyString_AS_STRING(result));
+    return result;
+}
+</pre></dl>
+
+<P>
+XXX some fields need to be added here...
+
+<P>
+<dl><dd><pre class="verbatim">
+    /* Added in release 2.2 */
+    /* Iterators */
+    getiterfunc tp_iter;
+    iternextfunc tp_iternext;
+</pre></dl>
+
+<P>
+These functions provide support for the iterator protocol.  Any object
+which wishes to support iteration over it's contents (which may be
+generated during iteration) must implement the <code>tp_iter</code>
+handler.  Objects which are returned by a <code>tp_iter</code> handler must
+implement both the <code>tp_iter</code> and <code>tp_iternext</code> handlers.
+Both handlers take exactly one parameter, the instance for which they
+are being called, and return a new reference.  In the case of an
+error, they should set an exception and return <tt class="constant">NULL</tt>.
+
+<P>
+For an object which represents an iterable collection, the
+<code>tp_iter</code> handler must return an iterator object.  The iterator
+object is responsible for maintaining the state of the iteration.  For
+collections which can support multiple iterators which do not
+interfere with each other (as lists and tuples do), a new iterator
+should be created and returned.  Objects which can only be iterated
+over once (usually due to side effects of iteration) should implement
+this handler by returning a new reference to themselves, and should
+also implement the <code>tp_iternext</code> handler.  File objects are an
+example of such an iterator.
+
+<P>
+Iterator objects should implement both handlers.  The <code>tp_iter</code>
+handler should return a new reference to the iterator (this is the
+same as the <code>tp_iter</code> handler for objects which can only be
+iterated over destructively).  The <code>tp_iternext</code> handler should
+return a new reference to the next object in the iteration if there is
+one.  If the iteration has reached the end, it may return <tt class="constant">NULL</tt>
+without setting an exception or it may set <tt class="exception">StopIteration</tt>;
+avoiding the exception can yield slightly better performance.  If an
+actual error occurs, it should set an exception and return <tt class="constant">NULL</tt>.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node26.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="dnt-type-methods.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node28.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node26.html">2.2.4 Object Comparison</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="dnt-type-methods.html">2.2 Type Methods</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node28.html">2.2.6 More Suggestions</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

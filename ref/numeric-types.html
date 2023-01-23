@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3.3.6 Emulating numeric types</title>
+<META NAME="description" CONTENT="3.3.6 Emulating numeric types">
+<META NAME="keywords" CONTENT="ref">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ref.css">
+<link rel="first" href="ref.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" href="coercion-rules.html">
+<LINK REL="previous" href="sequence-methods.html">
+<LINK REL="up" href="specialnames.html">
+<LINK REL="next" href="coercion-rules.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="sequence-methods.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="specialnames.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="coercion-rules.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="sequence-methods.html">3.3.5 Additional methods for</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="specialnames.html">3.3 Special method names</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="coercion-rules.html">3.3.7 Coercion rules</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005360000000000000000">&nbsp;</A>
+<BR>
+3.3.6 Emulating numeric types
+</H2>
+
+<P>
+The following methods can be defined to emulate numeric objects.
+Methods corresponding to operations that are not supported by the
+particular kind of number implemented (e.g., bitwise operations for
+non-integral numbers) should be left undefined.
+
+<P>
+<dl><dt><b><a name="l2h-138"><tt class="method">__add__</tt></a></b>(<var>self, other</var>)
+<dd>
+<dt><b><a name="l2h-139"><tt class="method">__sub__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-140"><tt class="method">__mul__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-141"><tt class="method">__floordiv__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-142"><tt class="method">__mod__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-143"><tt class="method">__divmod__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-144"><tt class="method">__pow__</tt></a></b>(<var>self, other</var><big>[</big><var>, modulo</var><big>]</big>)
+<dd><dt><b><a name="l2h-145"><tt class="method">__lshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-146"><tt class="method">__rshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-147"><tt class="method">__and__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-148"><tt class="method">__xor__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-149"><tt class="method">__or__</tt></a></b>(<var>self, other</var>)
+<dd>These methods are
+called to implement the binary arithmetic operations (<code>+</code>,
+<code>-</code>, <code>*</code>, <code>//</code>, <code>%</code>,
+<tt class="function">divmod()</tt><a name="l2h-190">&nbsp;</a>
+<tt class="function">pow()</tt><a name="l2h-191">&nbsp;</a> <code>**</code>, <code>&lt;</code><code>&lt;</code>,
+<code>&gt;</code><code>&gt;</code>, <code>&amp;</code>, <code>^</code>, <code>|</code>).  For instance, to
+evaluate the expression <var>x</var><code>+</code><var>y</var>, where <var>x</var> is an
+instance of a class that has an <tt class="method">__add__()</tt> method,
+<code><var>x</var>.__add__(<var>y</var>)</code> is called.  The <tt class="method">__divmod__()</tt>
+method should be the equivalent to using <tt class="method">__floordiv__()</tt> and
+<tt class="method">__mod__()</tt>; it should not be related to <tt class="method">__truediv__()</tt>
+(described below).  Note that
+<tt class="method">__pow__()</tt> should be defined to accept an optional third
+argument if the ternary version of the built-in
+<tt class="function">pow()</tt><a name="l2h-192">&nbsp;</a>function is to be supported.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-150"><tt class="method">__div__</tt></a></b>(<var>self, other</var>)
+<dd>
+<dt><b><a name="l2h-151"><tt class="method">__truediv__</tt></a></b>(<var>self, other</var>)
+<dd>The division operator (<code>/</code>) is implemented by these methods.  The
+<tt class="method">__truediv__()</tt> method is used when <code>__future__.division</code>
+is in effect, otherwise <tt class="method">__div__()</tt> is used.  If only one of
+these two methods is defined, the object will not support division in
+the alternate context; <tt class="exception">TypeError</tt> will be raised instead.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-152"><tt class="method">__radd__</tt></a></b>(<var>self, other</var>)
+<dd>
+<dt><b><a name="l2h-153"><tt class="method">__rsub__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-154"><tt class="method">__rmul__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-155"><tt class="method">__rdiv__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-156"><tt class="method">__rtruediv__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-157"><tt class="method">__rfloordiv__</tt></a></b>(<var>self, other</var>)
+<dd>		     
+<dt><b><a name="l2h-158"><tt class="method">__rmod__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-159"><tt class="method">__rdivmod__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-160"><tt class="method">__rpow__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-161"><tt class="method">__rlshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-162"><tt class="method">__rrshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-163"><tt class="method">__rand__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-164"><tt class="method">__rxor__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-165"><tt class="method">__ror__</tt></a></b>(<var>self, other</var>)
+<dd>These methods are
+called to implement the binary arithmetic operations (<code>+</code>,
+<code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>,
+<tt class="function">divmod()</tt><a name="l2h-193">&nbsp;</a>
+<tt class="function">pow()</tt><a name="l2h-194">&nbsp;</a> <code>**</code>, <code>&lt;</code><code>&lt;</code>,
+<code>&gt;</code><code>&gt;</code>, <code>&amp;</code>, <code>^</code>, <code>|</code>) with reflected
+(swapped) operands.  These functions are only called if the left
+operand does not support the corresponding operation.  For instance,
+to evaluate the expression <var>x</var><code>-</code><var>y</var>, where <var>y</var> is an
+instance of a class that has an <tt class="method">__rsub__()</tt> method,
+<code><var>y</var>.__rsub__(<var>x</var>)</code> is called.  Note that ternary
+<tt class="function">pow()</tt><a name="l2h-195">&nbsp;</a>will not try calling
+<tt class="method">__rpow__()</tt> (the coercion rules would become too
+complicated).
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-166"><tt class="method">__iadd__</tt></a></b>(<var>self, other</var>)
+<dd>
+<dt><b><a name="l2h-167"><tt class="method">__isub__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-168"><tt class="method">__imul__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-169"><tt class="method">__idiv__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-170"><tt class="method">__itruediv__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-171"><tt class="method">__ifloordiv__</tt></a></b>(<var>self, other</var>)
+<dd>		     
+<dt><b><a name="l2h-172"><tt class="method">__imod__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-173"><tt class="method">__ipow__</tt></a></b>(<var>self, other</var><big>[</big><var>, modulo</var><big>]</big>)
+<dd><dt><b><a name="l2h-174"><tt class="method">__ilshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-175"><tt class="method">__irshift__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-176"><tt class="method">__iand__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-177"><tt class="method">__ixor__</tt></a></b>(<var>self, other</var>)
+<dd><dt><b><a name="l2h-178"><tt class="method">__ior__</tt></a></b>(<var>self, other</var>)
+<dd>These methods are called to implement the augmented arithmetic
+operations (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>,
+<code>**=</code>, <code>&lt;</code><code>&lt;=</code>, <code>&gt;</code><code>&gt;=</code>, <code>&amp;=</code>,
+<code>=</code>, <code>|=</code>).  These methods should attempt to do the
+operation in-place (modifying <var>self</var>) and return the result (which
+could be, but does not have to be, <var>self</var>).  If a specific method
+is not defined, the augmented operation falls back to the normal
+methods.  For instance, to evaluate the expression
+<var>x</var><code>+=</code><var>y</var>, where <var>x</var> is an instance of a class that
+has an <tt class="method">__iadd__()</tt> method, <code><var>x</var>.__iadd__(<var>y</var>)</code> is
+called.  If <var>x</var> is an instance of a class that does not define a
+<tt class="method">__iadd()</tt> method, <code><var>x</var>.__add__(<var>y</var>)</code> and
+<code><var>y</var>.__radd__(<var>x</var>)</code> are considered, as with the
+evaluation of <var>x</var><code>+</code><var>y</var>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-179"><tt class="method">__neg__</tt></a></b>(<var>self</var>)
+<dd>
+<dt><b><a name="l2h-180"><tt class="method">__pos__</tt></a></b>(<var>self</var>)
+<dd><dt><b><a name="l2h-181"><tt class="method">__abs__</tt></a></b>(<var>self</var>)
+<dd><dt><b><a name="l2h-182"><tt class="method">__invert__</tt></a></b>(<var>self</var>)
+<dd>Called to implement the unary arithmetic operations (<code>-</code>,
+<code>+</code>, <tt class="function">abs()</tt><a name="l2h-196">&nbsp;</a>and <code>~</code>).
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-183"><tt class="method">__complex__</tt></a></b>(<var>self</var>)
+<dd>
+<dt><b><a name="l2h-184"><tt class="method">__int__</tt></a></b>(<var>self</var>)
+<dd><dt><b><a name="l2h-185"><tt class="method">__long__</tt></a></b>(<var>self</var>)
+<dd><dt><b><a name="l2h-186"><tt class="method">__float__</tt></a></b>(<var>self</var>)
+<dd>Called to implement the built-in functions
+<tt class="function">complex()</tt><a name="l2h-197">&nbsp;</a>
+<tt class="function">int()</tt><a name="l2h-198">&nbsp;</a> <tt class="function">long()</tt><a name="l2h-199">&nbsp;</a>
+and <tt class="function">float()</tt><a name="l2h-200">&nbsp;</a>  Should return a value of
+the appropriate type.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-187"><tt class="method">__oct__</tt></a></b>(<var>self</var>)
+<dd>
+<dt><b><a name="l2h-188"><tt class="method">__hex__</tt></a></b>(<var>self</var>)
+<dd>Called to implement the built-in functions
+<tt class="function">oct()</tt><a name="l2h-201">&nbsp;</a>and
+<tt class="function">hex()</tt><a name="l2h-202">&nbsp;</a>  Should return a string value.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-189"><tt class="method">__coerce__</tt></a></b>(<var>self, other</var>)
+<dd>
+Called to implement ``mixed-mode'' numeric arithmetic.  Should either
+return a 2-tuple containing <var>self</var> and <var>other</var> converted to
+a common numeric type, or <code>None</code> if conversion is impossible.  When
+the common type would be the type of <code>other</code>, it is sufficient to
+return <code>None</code>, since the interpreter will also ask the other
+object to attempt a coercion (but sometimes, if the implementation of
+the other type cannot be changed, it is useful to do the conversion to
+the other type here).  A return value of <code>NotImplemented</code> is
+equivalent to returning <code>None</code>.
+</dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="sequence-methods.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="specialnames.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="coercion-rules.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="sequence-methods.html">3.3.5 Additional methods for</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="specialnames.html">3.3 Special method names</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="coercion-rules.html">3.3.7 Coercion rules</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

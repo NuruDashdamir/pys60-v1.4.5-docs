@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>12.2.11 Differences from email v1 (up to Python 2.2.1)</title>
+<META NAME="description" CONTENT="12.2.11 Differences from email v1 (up to Python 2.2.1)">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" HREF="node395.html">
+<LINK REL="previous" href="module-email.Iterators.html">
+<LINK REL="up" href="module-email.html">
+<LINK REL="next" HREF="node395.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Iterators.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node395.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Iterators.html">12.2.10 Iterators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node395.html">12.2.12 Differences from mimelib</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00142110000000000000000">
+12.2.11 Differences from <tt class="module">email</tt> v1 (up to Python 2.2.1)</A>
+</H2>
+
+<P>
+Version 1 of the <tt class="module">email</tt> package was bundled with Python
+releases up to Python 2.2.1.  Version 2 was developed for the Python
+2.3 release, and backported to Python 2.2.2.  It was also available as
+a separate distutils based package.  <tt class="module">email</tt> version 2 is
+almost entirely backward compatible with version 1, with the
+following differences:
+
+<P>
+
+<UL>
+<LI>The <tt class="module">email.Header</tt> and <tt class="module">email.Charset</tt> modules
+      have been added.
+
+<P>
+</LI>
+<LI>The pickle format for <tt class="class">Message</tt> instances has changed.
+      Since this was never (and still isn't) formally defined, this
+      isn't considered a backward incompatibility.  However if your
+      application pickles and unpickles <tt class="class">Message</tt> instances, be
+      aware that in <tt class="module">email</tt> version 2, <tt class="class">Message</tt>
+      instances now have private variables <var>_charset</var> and
+      <var>_default_type</var>.
+
+<P>
+</LI>
+<LI>Several methods in the <tt class="class">Message</tt> class have been
+      deprecated, or their signatures changed.  Also, many new methods
+      have been added.  See the documentation for the <tt class="class">Message</tt>
+      class for details.  The changes should be completely backward
+      compatible.
+
+<P>
+</LI>
+<LI>The object structure has changed in the face of
+      <span class="mimetype">message/rfc822</span> content types.  In <tt class="module">email</tt>
+      version 1, such a type would be represented by a scalar payload,
+      i.e. the container message's <tt class="method">is_multipart()</tt> returned
+      false, <tt class="method">get_payload()</tt> was not a list object, but a single
+      <tt class="class">Message</tt> instance.
+
+<P>
+This structure was inconsistent with the rest of the package, so
+      the object representation for <span class="mimetype">message/rfc822</span> content
+      types was changed.  In <tt class="module">email</tt> version 2, the container
+      <i>does</i> return <code>True</code> from <tt class="method">is_multipart()</tt>, and
+      <tt class="method">get_payload()</tt> returns a list containing a single
+      <tt class="class">Message</tt> item.
+
+<P>
+Note that this is one place that backward compatibility could
+      not be completely maintained.  However, if you're already
+      testing the return type of <tt class="method">get_payload()</tt>, you should be
+      fine.  You just need to make sure your code doesn't do a
+      <tt class="method">set_payload()</tt> with a <tt class="class">Message</tt> instance on a
+      container with a content type of <span class="mimetype">message/rfc822</span>.
+
+<P>
+</LI>
+<LI>The <tt class="class">Parser</tt> constructor's <var>strict</var> argument was
+      added, and its <tt class="method">parse()</tt> and <tt class="method">parsestr()</tt> methods
+      grew a <var>headersonly</var> argument.  The <var>strict</var> flag was
+      also added to functions <tt class="function">email.message_from_file()</tt>
+      and <tt class="function">email.message_from_string()</tt>.
+
+<P>
+</LI>
+<LI><tt class="method">Generator.__call__()</tt> is deprecated; use
+      <tt class="method">Generator.flatten()</tt> instead.  The <tt class="class">Generator</tt>
+      class has also grown the <tt class="method">clone()</tt> method.
+
+<P>
+</LI>
+<LI>The <tt class="class">DecodedGenerator</tt> class in the
+      <tt class="module">email.Generator</tt> module was added.
+
+<P>
+</LI>
+<LI>The intermediate base classes <tt class="class">MIMENonMultipart</tt> and
+      <tt class="class">MIMEMultipart</tt> have been added, and interposed in the
+      class hierarchy for most of the other MIME-related derived
+      classes.
+
+<P>
+</LI>
+<LI>The <var>_encoder</var> argument to the <tt class="class">MIMEText</tt> constructor
+      has been deprecated.  Encoding  now happens implicitly based
+      on the <var>_charset</var> argument.
+
+<P>
+</LI>
+<LI>The following functions in the <tt class="module">email.Utils</tt> module have
+      been deprecated: <tt class="function">dump_address_pairs()</tt>,
+      <tt class="function">decode()</tt>, and <tt class="function">encode()</tt>.  The following
+      functions have been added to the module:
+      <tt class="function">make_msgid()</tt>, <tt class="function">decode_rfc2231()</tt>,
+      <tt class="function">encode_rfc2231()</tt>, and <tt class="function">decode_params()</tt>.
+
+<P>
+</LI>
+<LI>The non-public function <tt class="function">email.Iterators._structure()</tt>
+      was added.
+</LI>
+</UL>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-email.Iterators.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node395.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-email.Iterators.html">12.2.10 Iterators</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node395.html">12.2.12 Differences from mimelib</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

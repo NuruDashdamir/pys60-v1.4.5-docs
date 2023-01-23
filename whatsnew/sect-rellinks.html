@@ -1,0 +1,632 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>2 PEPs 252 and 253: Type and Class Changes</title>
+<META NAME="description" CONTENT="2 PEPs 252 and 253: Type and Class Changes">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node4.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node2.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node4.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node2.html">1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node4.html">3 PEP 234: Iterators</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="#SECTION000310000000000000000">2.1 Old and New Classes</a>
+<LI><A href="#SECTION000320000000000000000">2.2 Descriptors</a>
+<LI><A href="#SECTION000330000000000000000">2.3 Multiple Inheritance: The Diamond Rule</a>
+<LI><A href="#SECTION000340000000000000000">2.4 Attribute Access</a>
+<LI><A href="#SECTION000350000000000000000">2.5 Related Links</a>
+</ul>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION000300000000000000000">
+2 PEPs 252 and 253: Type and Class Changes</A>
+</H1>
+
+<P>
+The largest and most far-reaching changes in Python 2.2 are to
+Python's model of objects and classes.  The changes should be backward
+compatible, so it's likely that your code will continue to run
+unchanged, but the changes provide some amazing new capabilities.
+Before beginning this, the longest and most complicated section of
+this article, I'll provide an overview of the changes and offer some
+comments.
+
+<P>
+A long time ago I wrote a Web page
+(<a class="url" href="http://www.amk.ca/python/writing/warts.html">http://www.amk.ca/python/writing/warts.html</a>) listing flaws in
+Python's design.  One of the most significant flaws was that it's
+impossible to subclass Python types implemented in C.  In particular,
+it's not possible to subclass built-in types, so you can't just
+subclass, say, lists in order to add a single useful method to them.
+The <tt class="module">UserList</tt> module provides a class that supports all of the
+methods of lists and that can be subclassed further, but there's lots
+of C code that expects a regular Python list and won't accept a
+<tt class="class">UserList</tt> instance.
+
+<P>
+Python 2.2 fixes this, and in the process adds some exciting new
+capabilities.  A brief summary:
+
+<P>
+
+<UL>
+<LI>You can subclass built-in types such as lists and even integers,
+and your subclasses should work in every place that requires the
+original type.
+
+<P>
+</LI>
+<LI>It's now possible to define static and class methods, in addition
+to the instance methods available in previous versions of Python.
+
+<P>
+</LI>
+<LI>It's also possible to automatically call methods on accessing or
+setting an instance attribute by using a new mechanism called
+<i class="dfn">properties</i>.  Many uses of <tt class="method">__getattr__</tt> can be rewritten
+to use properties instead, making the resulting code simpler and
+faster.  As a small side benefit, attributes can now have docstrings,
+too.
+
+<P>
+</LI>
+<LI>The list of legal attributes for an instance can be limited to a
+particular set using <i class="dfn">slots</i>, making it possible to safeguard
+against typos and perhaps make more optimizations possible in future
+versions of Python.
+
+<P>
+</LI>
+</UL>
+
+<P>
+Some users have voiced concern about all these changes.  Sure, they
+say, the new features are neat and lend themselves to all sorts of
+tricks that weren't possible in previous versions of Python, but
+they also make the language more complicated.  Some people have said
+that they've always recommended Python for its simplicity, and feel
+that its simplicity is being lost.
+
+<P>
+Personally, I think there's no need to worry.  Many of the new
+features are quite esoteric, and you can write a lot of Python code
+without ever needed to be aware of them.  Writing a simple class is no
+more difficult than it ever was, so you don't need to bother learning
+or teaching them unless they're actually needed.  Some very
+complicated tasks that were previously only possible from C will now
+be possible in pure Python, and to my mind that's all for the better.
+
+<P>
+I'm not going to attempt to cover every single corner case and small
+change that were required to make the new features work.  Instead this
+section will paint only the broad strokes.  See section&nbsp;<A href="sect-rellinks.html#sect-rellinks">2.5</A>,
+``Related Links'', for further sources of information about Python 2.2's new
+object model.
+
+<P>
+
+<H2><A NAME="SECTION000310000000000000000">
+2.1 Old and New Classes</A>
+</H2>
+
+<P>
+First, you should know that Python 2.2 really has two kinds of
+classes: classic or old-style classes, and new-style classes.  The
+old-style class model is exactly the same as the class model in
+earlier versions of Python.  All the new features described in this
+section apply only to new-style classes. This divergence isn't
+intended to last forever; eventually old-style classes will be
+dropped, possibly in Python 3.0.
+
+<P>
+So how do you define a new-style class?  You do it by subclassing an
+existing new-style class.  Most of Python's built-in types, such as
+integers, lists, dictionaries, and even files, are new-style classes
+now.  A new-style class named <tt class="class">object</tt>, the base class for all
+built-in types, has been also been added so if no built-in type is
+suitable, you can just subclass <tt class="class">object</tt>:
+
+<P>
+<dl><dd><pre class="verbatim">
+class C(object):
+    def __init__ (self):
+        ...
+    ...
+</pre></dl>
+
+<P>
+This means that <tt class="keyword">class</tt> statements that don't have any base
+classes are always classic classes in Python 2.2.  (Actually you can
+also change this by setting a module-level variable named
+<tt class="member">__metaclass__</tt> -- see <a class="rfc" name="rfcref-1147"
+href="http://www.python.org/peps/pep-0253.html">PEP 253</a> for the details -- but it's
+easier to just subclass <tt class="keyword">object</tt>.)
+
+<P>
+The type objects for the built-in types are available as built-ins,
+named using a clever trick.  Python has always had built-in functions
+named <tt class="function">int()</tt>, <tt class="function">float()</tt>, and <tt class="function">str()</tt>.  In
+2.2, they aren't functions any more, but type objects that behave as
+factories when called.
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; int
+&lt;type 'int'&gt;
+&gt;&gt;&gt; int('123')
+123
+</pre></dl>
+
+<P>
+To make the set of types complete, new type objects such as
+<tt class="function">dict</tt> and <tt class="function">file</tt> have been added.  Here's a
+more interesting example, adding a <tt class="method">lock()</tt> method to file
+objects:
+
+<P>
+<dl><dd><pre class="verbatim">
+class LockableFile(file):
+    def lock (self, operation, length=0, start=0, whence=0):
+        import fcntl
+        return fcntl.lockf(self.fileno(), operation,
+                           length, start, whence)
+</pre></dl>
+
+<P>
+The now-obsolete <tt class="module">posixfile</tt> module contained a class that
+emulated all of a file object's methods and also added a
+<tt class="method">lock()</tt> method, but this class couldn't be passed to internal
+functions that expected a built-in file, something which is possible
+with our new <tt class="class">LockableFile</tt>.
+
+<P>
+
+<H2><A NAME="SECTION000320000000000000000">
+2.2 Descriptors</A>
+</H2>
+
+<P>
+In previous versions of Python, there was no consistent way to
+discover what attributes and methods were supported by an object.
+There were some informal conventions, such as defining
+<tt class="member">__members__</tt> and <tt class="member">__methods__</tt> attributes that were
+lists of names, but often the author of an extension type or a class
+wouldn't bother to define them.  You could fall back on inspecting the
+<tt class="member">__dict__</tt> of an object, but when class inheritance or an
+arbitrary <tt class="method">__getattr__</tt> hook were in use this could still be
+inaccurate.
+
+<P>
+The one big idea underlying the new class model is that an API for
+describing the attributes of an object using <i class="dfn">descriptors</i> has
+been formalized.  Descriptors specify the value of an attribute,
+stating whether it's a method or a field.  With the descriptor API,
+static methods and class methods become possible, as well as more
+exotic constructs.
+
+<P>
+Attribute descriptors are objects that live inside class objects, and
+have a few attributes of their own:
+
+<P>
+
+<UL>
+<LI><tt class="member">__name__</tt> is the attribute's name.
+
+<P>
+</LI>
+<LI><tt class="member">__doc__</tt> is the attribute's docstring.
+
+<P>
+</LI>
+<LI><tt class="method">__get__(<var>object</var>)</tt> is a method that retrieves the
+attribute value from <var>object</var>. 
+
+<P>
+</LI>
+<LI><tt class="method">__set__(<var>object</var>, <var>value</var>)</tt> sets the attribute
+on <var>object</var> to <var>value</var>.
+
+<P>
+</LI>
+<LI><tt class="method">__delete__(<var>object</var>, <var>value</var>)</tt> deletes the <var>value</var> 
+attribute of <var>object</var>.
+</LI>
+</UL>
+
+<P>
+For example, when you write <code>obj.x</code>, the steps that Python
+actually performs are:
+
+<P>
+<dl><dd><pre class="verbatim">
+descriptor = obj.__class__.x
+descriptor.__get__(obj)
+</pre></dl>
+
+<P>
+For methods, <tt class="method">descriptor.__get__</tt> returns a temporary object that's
+callable, and wraps up the instance and the method to be called on it.
+This is also why static methods and class methods are now possible;
+they have descriptors that wrap up just the method, or the method and
+the class.  As a brief explanation of these new kinds of methods,
+static methods aren't passed the instance, and therefore resemble
+regular functions.  Class methods are passed the class of the object,
+but not the object itself.  Static and class methods are defined like
+this:
+
+<P>
+<dl><dd><pre class="verbatim">
+class C(object):
+    def f(arg1, arg2):
+        ...
+    f = staticmethod(f)
+
+    def g(cls, arg1, arg2):
+        ...
+    g = classmethod(g)
+</pre></dl>
+
+<P>
+The <tt class="function">staticmethod()</tt> function takes the function
+<tt class="function">f</tt>, and returns it wrapped up in a descriptor so it can be
+stored in the class object.  You might expect there to be special
+syntax for creating such methods (<code>def static f()</code>,
+<code>defstatic f()</code>, or something like that) but no such syntax has
+been defined yet; that's been left for future versions of Python.
+
+<P>
+More new features, such as slots and properties, are also implemented
+as new kinds of descriptors, and it's not difficult to write a
+descriptor class that does something novel.  For example, it would be
+possible to write a descriptor class that made it possible to write
+Eiffel-style preconditions and postconditions for a method.  A class
+that used this feature might be defined like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+from eiffel import eiffelmethod
+
+class C(object):
+    def f(self, arg1, arg2):
+        # The actual function
+        ...
+    def pre_f(self):
+        # Check preconditions
+        ...
+    def post_f(self):
+        # Check postconditions
+        ...
+
+    f = eiffelmethod(f, pre_f, post_f)
+</pre></dl>
+
+<P>
+Note that a person using the new <tt class="function">eiffelmethod()</tt> doesn't
+have to understand anything about descriptors.  This is why I think
+the new features don't increase the basic complexity of the language.
+There will be a few wizards who need to know about it in order to
+write <tt class="function">eiffelmethod()</tt> or the ZODB or whatever, but most
+users will just write code on top of the resulting libraries and
+ignore the implementation details.
+
+<P>
+
+<H2><A NAME="SECTION000330000000000000000">
+2.3 Multiple Inheritance: The Diamond Rule</A>
+</H2>
+
+<P>
+Multiple inheritance has also been made more useful through changing
+the rules under which names are resolved.  Consider this set of classes
+(diagram taken from <a class="rfc" name="rfcref-1151"
+href="http://www.python.org/peps/pep-0253.html">PEP 253</a> by Guido van Rossum):
+
+<P>
+<dl><dd><pre class="verbatim">
+                class A:
+                  ^ ^  def save(self): ...
+                 /   \
+                /     \
+               /       \
+              /         \
+          class B     class C:
+              ^         ^  def save(self): ...
+               \       /
+                \     /
+                 \   /
+                  \ /
+                class D
+</pre></dl>
+
+<P>
+The lookup rule for classic classes is simple but not very smart; the
+base classes are searched depth-first, going from left to right.  A
+reference to <tt class="method">D.save</tt> will search the classes <tt class="class">D</tt>,
+<tt class="class">B</tt>, and then <tt class="class">A</tt>, where <tt class="method">save()</tt> would be found
+and returned.  <tt class="method">C.save()</tt> would never be found at all.  This is
+bad, because if <tt class="class">C</tt>'s <tt class="method">save()</tt> method is saving some
+internal state specific to <tt class="class">C</tt>, not calling it will result in
+that state never getting saved.
+
+<P>
+New-style classes follow a different algorithm that's a bit more
+complicated to explain, but does the right thing in this situation.
+
+<P>
+
+<OL>
+<LI>List all the base classes, following the classic lookup rule and
+include a class multiple times if it's visited repeatedly.  In the
+above example, the list of visited classes is [<tt class="class">D</tt>, <tt class="class">B</tt>,
+<tt class="class">A</tt>, <tt class="class">C</tt>, <tt class="class">A</tt>].
+
+<P>
+</LI>
+<LI>Scan the list for duplicated classes.  If any are found, remove
+all but one occurrence, leaving the <i>last</i> one in the list.  In
+the above example, the list becomes [<tt class="class">D</tt>, <tt class="class">B</tt>, <tt class="class">C</tt>,
+<tt class="class">A</tt>] after dropping duplicates.
+
+<P>
+</LI>
+</OL>
+
+<P>
+Following this rule, referring to <tt class="method">D.save()</tt> will return
+<tt class="method">C.save()</tt>, which is the behaviour we're after.  This lookup
+rule is the same as the one followed by Common Lisp.  A new built-in
+function, <tt class="function">super()</tt>, provides a way to get at a class's
+superclasses without having to reimplement Python's algorithm.
+The most commonly used form will be 
+<tt class="function">super(<var>class</var>, <var>obj</var>)</tt>, which returns 
+a bound superclass object (not the actual class object).  This form
+will be used in methods to call a method in the superclass; for
+example, <tt class="class">D</tt>'s <tt class="method">save()</tt> method would look like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+class D:
+    def save (self):
+	# Call superclass .save()
+        super(D, self).save()
+        # Save D's private information here
+        ...
+</pre></dl>
+
+<P>
+<tt class="function">super()</tt> can also return unbound superclass objects
+when called as <tt class="function">super(<var>class</var>)</tt> or
+<tt class="function">super(<var>class1</var>, <var>class2</var>)</tt>, but this probably won't
+often be useful.
+
+<P>
+
+<H2><A NAME="SECTION000340000000000000000">
+2.4 Attribute Access</A>
+</H2>
+
+<P>
+A fair number of sophisticated Python classes define hooks for
+attribute access using <tt class="method">__getattr__</tt>; most commonly this is
+done for convenience, to make code more readable by automatically
+mapping an attribute access such as <code>obj.parent</code> into a method
+call such as <code>obj.get_parent()</code>.  Python 2.2 adds some new ways
+of controlling attribute access.
+
+<P>
+First, <tt class="method">__getattr__(<var>attr_name</var>)</tt> is still supported by
+new-style classes, and nothing about it has changed.  As before, it
+will be called when an attempt is made to access <code>obj.foo</code> and no
+attribute named "<tt class="samp">foo</tt>" is found in the instance's dictionary.
+
+<P>
+New-style classes also support a new method,
+<tt class="method">__getattribute__(<var>attr_name</var>)</tt>.  The difference between
+the two methods is that <tt class="method">__getattribute__</tt> is <i>always</i>
+called whenever any attribute is accessed, while the old
+<tt class="method">__getattr__</tt> is only called if "<tt class="samp">foo</tt>" isn't found in the
+instance's dictionary.
+
+<P>
+However, Python 2.2's support for <i class="dfn">properties</i> will often be a
+simpler way to trap attribute references.  Writing a
+<tt class="method">__getattr__</tt> method is complicated because to avoid recursion
+you can't use regular attribute accesses inside them, and instead have
+to mess around with the contents of <tt class="member">__dict__</tt>.
+<tt class="method">__getattr__</tt> methods also end up being called by Python when
+it checks for other methods such as <tt class="method">__repr__</tt> or
+<tt class="method">__coerce__</tt>, and so have to be written with this in mind.
+Finally, calling a function on every attribute access results in a
+sizable performance loss.
+
+<P>
+<tt class="class">property</tt> is a new built-in type that packages up three
+functions that get, set, or delete an attribute, and a docstring.  For
+example, if you want to define a <tt class="member">size</tt> attribute that's
+computed, but also settable, you could write:
+
+<P>
+<dl><dd><pre class="verbatim">
+class C(object):
+    def get_size (self):
+        result = ... computation ...
+        return result
+    def set_size (self, size):
+        ... compute something based on the size
+        and set internal state appropriately ...
+
+    # Define a property.  The 'delete this attribute'
+    # method is defined as None, so the attribute
+    # can't be deleted.
+    size = property(get_size, set_size,
+                    None,
+                    "Storage size of this instance")
+</pre></dl>
+
+<P>
+That is certainly clearer and easier to write than a pair of
+<tt class="method">__getattr__</tt>/<tt class="method">__setattr__</tt> methods that check for the
+<tt class="member">size</tt> attribute and handle it specially while retrieving all
+other attributes from the instance's <tt class="member">__dict__</tt>.  Accesses to
+<tt class="member">size</tt> are also the only ones which have to perform the work of
+calling a function, so references to other attributes run at
+their usual speed.
+
+<P>
+Finally, it's possible to constrain the list of attributes that can be
+referenced on an object using the new <tt class="member">__slots__</tt> class attribute.
+Python objects are usually very dynamic; at any time it's possible to
+define a new attribute on an instance by just doing
+<code>obj.new_attr=1</code>.  This is flexible and convenient, but this
+flexibility can also lead to bugs, as when you meant to write
+<code>obj.template = 'a'</code> but made a typo and wrote
+<code>obj.templtae</code> by accident.  
+
+<P>
+A new-style class can define a class attribute named <tt class="member">__slots__</tt>
+to constrain the list of legal attribute names.  An example will make
+this clear:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; class C(object):
+...     __slots__ = ('template', 'name')
+...
+&gt;&gt;&gt; obj = C()
+&gt;&gt;&gt; print obj.template
+None
+&gt;&gt;&gt; obj.template = 'Test'
+&gt;&gt;&gt; print obj.template
+Test
+&gt;&gt;&gt; obj.templtae = None
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+AttributeError: 'C' object has no attribute 'templtae'
+</pre></dl>
+
+<P>
+Note how you get an <tt class="exception">AttributeError</tt> on the attempt to
+assign to an attribute not listed in <tt class="member">__slots__</tt>.
+
+<P>
+
+<H2><A NAME="SECTION000350000000000000000">&nbsp;</A>
+<BR>
+2.5 Related Links
+</H2>
+
+<P>
+This section has just been a quick overview of the new features,
+giving enough of an explanation to start you programming, but many
+details have been simplified or ignored.  Where should you go to get a
+more complete picture?
+
+<P>
+<a class="url" href="http://www.python.org/2.2/descrintro.html">http://www.python.org/2.2/descrintro.html</a> is a lengthy tutorial
+introduction to the descriptor features, written by Guido van Rossum.
+If my description has whetted your appetite, go read this tutorial
+next, because it goes into much more detail about the new features
+while still remaining quite easy to read.
+
+<P>
+Next, there are two relevant PEPs, <a class="rfc" name="rfcref-1155"
+href="http://www.python.org/peps/pep-0252.html">PEP 252</a> and <a class="rfc" name="rfcref-1157"
+href="http://www.python.org/peps/pep-0253.html">PEP 253</a>.  <a class="rfc" name="rfcref-1159"
+href="http://www.python.org/peps/pep-0252.html">PEP 252</a>
+is titled "Making Types Look More Like Classes", and covers the
+descriptor API.  <a class="rfc" name="rfcref-1161"
+href="http://www.python.org/peps/pep-0253.html">PEP 253</a> is titled "Subtyping Built-in Types", and
+describes the changes to type objects that make it possible to subtype
+built-in objects.  <a class="rfc" name="rfcref-1163"
+href="http://www.python.org/peps/pep-0253.html">PEP 253</a> is the more complicated PEP of the two,
+and at a few points the necessary explanations of types and meta-types
+may cause your head to explode.  Both PEPs were written and
+implemented by Guido van Rossum, with substantial assistance from the
+rest of the Zope Corp. team.
+
+<P>
+Finally, there's the ultimate authority: the source code.  Most of the
+machinery for the type handling is in <span class="file">Objects/typeobject.c</span>, but
+you should only resort to it after all other avenues have been
+exhausted, including posting a question to python-list or python-dev. 
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node2.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node4.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node2.html">1 Introduction</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node4.html">3 PEP 234: Iterators</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

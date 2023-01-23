@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>9 New and Improved Modules</title>
+<META NAME="description" CONTENT="9 New and Improved Modules">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node11.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node9.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node11.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node9.html">8 PEP 227: Nested</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node11.html">10 Interpreter Changes and</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001000000000000000000">
+9 New and Improved Modules</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>The <tt class="module">xmlrpclib</tt> module was contributed to the standard
+ library by Fredrik Lundh, provding support for writing XML-RPC
+  clients.  XML-RPC is a simple remote procedure call protocol built on
+  top of HTTP and XML. For example, the following snippet retrieves a
+  list of RSS channels from the O'Reilly Network, and then 
+  lists the recent headlines for one channel:
+
+<P>
+<dl><dd><pre class="verbatim">
+import xmlrpclib
+s = xmlrpclib.Server(
+      'http://www.oreillynet.com/meerkat/xml-rpc/server.php')
+channels = s.meerkat.getChannels()
+# channels is a list of dictionaries, like this:
+# [{'id': 4, 'title': 'Freshmeat Daily News'}
+#  {'id': 190, 'title': '32Bits Online'},
+#  {'id': 4549, 'title': '3DGamers'}, ... ]
+
+# Get the items for one channel
+items = s.meerkat.getItems( {'channel': 4} )
+
+# 'items' is another list of dictionaries, like this:
+# [{'link': 'http://freshmeat.net/releases/52719/', 
+#   'description': 'A utility which converts HTML to XSL FO.', 
+#   'title': 'html2fo 0.3 (Default)'}, ... ]
+</pre></dl>
+
+<P>
+The <tt class="module">SimpleXMLRPCServer</tt> module makes it easy to create
+straightforward XML-RPC servers.  See <a class="url" href="http://www.xmlrpc.com/">http://www.xmlrpc.com/</a> for
+more information about XML-RPC.
+
+<P>
+</LI>
+<LI>The new <tt class="module">hmac</tt> module implements the HMAC
+  algorithm described by <a class="rfc" name="rfcref-1183"
+href="http://www.faqs.org/rfcs/rfc2104.html">RFC 2104</a>.
+  (Contributed by Gerhard H&#228;ring.)
+
+<P>
+</LI>
+<LI>Several functions that originally returned lengthy tuples now
+  return pseudo-sequences that still behave like tuples but also have
+  mnemonic attributes such as memberst_mtime or <tt class="member">tm_year</tt>.
+  The enhanced functions include <tt class="function">stat()</tt>,
+  <tt class="function">fstat()</tt>, <tt class="function">statvfs()</tt>, and <tt class="function">fstatvfs()</tt>
+  in the <tt class="module">os</tt> module, and <tt class="function">localtime()</tt>,
+  <tt class="function">gmtime()</tt>, and <tt class="function">strptime()</tt> in the <tt class="module">time</tt>
+  module.  
+
+<P>
+For example, to obtain a file's size using the old tuples, you'd end
+  up writing something like <code>file_size =
+  os.stat(filename)[stat.ST_SIZE]</code>, but now this can be written more
+  clearly as <code>file_size = os.stat(filename).st_size</code>.
+
+<P>
+The original patch for this feature was contributed by Nick Mathewson.
+
+<P>
+</LI>
+<LI>The Python profiler has been extensively reworked and various
+  errors in its output have been corrected.  (Contributed by Fred
+  Fred&nbsp;L. Drake, Jr. and Tim Peters.)
+
+<P>
+</LI>
+<LI>The <tt class="module">socket</tt> module can be compiled to support IPv6;
+  specify the <b class="programopt">--enable-ipv6</b> option to Python's configure
+  script.  (Contributed by Jun-ichiro ``itojun'' Hagino.)
+
+<P>
+</LI>
+<LI>Two new format characters were added to the <tt class="module">struct</tt>
+  module for 64-bit integers on platforms that support the C
+  <tt class="ctype">long long</tt> type.  "<tt class="samp">q</tt>" is for a signed 64-bit integer,
+  and "<tt class="samp">Q</tt>" is for an unsigned one.  The value is returned in
+  Python's long integer type.  (Contributed by Tim Peters.)
+
+<P>
+</LI>
+<LI>In the interpreter's interactive mode, there's a new built-in
+  function <tt class="function">help()</tt> that uses the <tt class="module">pydoc</tt> module
+  introduced in Python 2.1 to provide interactive help.
+  <code>help(<var>object</var>)</code> displays any available help text about
+  <var>object</var>.  <tt class="function">help()</tt> with no argument puts you in an online
+  help utility, where you can enter the names of functions, classes,
+  or modules to read their help text.
+  (Contributed by Guido van Rossum, using Ka-Ping Yee's <tt class="module">pydoc</tt> module.)
+
+<P>
+</LI>
+<LI>Various bugfixes and performance improvements have been made
+  to the SRE engine underlying the <tt class="module">re</tt> module.  For example,
+  the <tt class="function">re.sub()</tt> and <tt class="function">re.split()</tt> functions have
+  been rewritten in C.  Another contributed patch speeds up certain
+  Unicode character ranges by a factor of two, and a new <tt class="method">finditer()</tt> 
+  method that returns an iterator over all the non-overlapping matches in 
+  a given string. 
+  (SRE is maintained by
+  Fredrik Lundh.  The BIGCHARSET patch was contributed by Martin von
+  L&#246;wis.)
+
+<P>
+</LI>
+<LI>The <tt class="module">smtplib</tt> module now supports <a class="rfc" name="rfcref-1185"
+href="http://www.faqs.org/rfcs/rfc2487.html">RFC 2487</a>, ``Secure
+  SMTP over TLS'', so it's now possible to encrypt the SMTP traffic
+  between a Python program and the mail transport agent being handed a
+  message.  <tt class="module">smtplib</tt> also supports SMTP authentication. 
+  (Contributed by Gerhard H&#228;ring.)
+
+<P>
+</LI>
+<LI>The <tt class="module">imaplib</tt> module, maintained by Piers Lauder, has
+  support for several new extensions: the NAMESPACE extension defined
+  in <a class="rfc" name="rfcref-1187"
+href="http://www.faqs.org/rfcs/rfc2342.html">RFC 2342</a>, SORT, GETACL and SETACL.  (Contributed by Anthony
+  Baxter and Michel Pelletier.)
+
+<P>
+</LI>
+<LI>The <tt class="module">rfc822</tt> module's parsing of email addresses is now
+  compliant with <a class="rfc" name="rfcref-1189"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>, an update to <a class="rfc" name="rfcref-1191"
+href="http://www.faqs.org/rfcs/rfc822.html">RFC 822</a>.  (The module's
+  name is <i>not</i> going to be changed to "<tt class="samp">rfc2822</tt>".)  A new
+  package, <tt class="module">email</tt>, has also been added for parsing and
+  generating e-mail messages.  (Contributed by Barry Warsaw, and
+  arising out of his work on Mailman.)
+
+<P>
+</LI>
+<LI>The <tt class="module">difflib</tt> module now contains a new <tt class="class">Differ</tt>
+  class for producing human-readable lists of changes (a ``delta'')
+  between two sequences of lines of text.  There are also two
+  generator functions, <tt class="function">ndiff()</tt> and <tt class="function">restore()</tt>,
+  which respectively return a delta from two sequences, or one of the
+  original sequences from a delta. (Grunt work contributed by David
+  Goodger, from ndiff.py code by Tim Peters who then did the
+  generatorization.)
+
+<P>
+</LI>
+<LI>New constants <tt class="constant">ascii_letters</tt>,
+  <tt class="constant">ascii_lowercase</tt>, and <tt class="constant">ascii_uppercase</tt> were
+  added to the <tt class="module">string</tt> module.  There were several modules in
+  the standard library that used <tt class="constant">string.letters</tt> to mean the
+  ranges A-Za-z, but that assumption is incorrect when locales are in
+  use, because <tt class="constant">string.letters</tt> varies depending on the set
+  of legal characters defined by the current locale.  The buggy
+  modules have all been fixed to use <tt class="constant">ascii_letters</tt> instead.
+  (Reported by an unknown person; fixed by Fred&nbsp;L. Drake, Jr.)
+
+<P>
+</LI>
+<LI>The <tt class="module">mimetypes</tt> module now makes it easier to use
+  alternative MIME-type databases by the addition of a
+  <tt class="class">MimeTypes</tt> class, which takes a list of filenames to be
+  parsed.  (Contributed by Fred&nbsp;L. Drake, Jr.)
+
+<P>
+</LI>
+<LI>A <tt class="class">Timer</tt> class was added to the <tt class="module">threading</tt>
+  module that allows scheduling an activity to happen at some future
+  time.  (Contributed by Itamar Shtull-Trauring.)
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node9.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node11.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node9.html">8 PEP 227: Nested</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node11.html">10 Interpreter Changes and</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

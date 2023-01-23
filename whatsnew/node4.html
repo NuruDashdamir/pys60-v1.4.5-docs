@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3 PEP 234: Iterators</title>
+<META NAME="description" CONTENT="3 PEP 234: Iterators">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node5.html">
+<LINK REL="previous" href="sect-rellinks.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node5.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="sect-rellinks.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node5.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="sect-rellinks.html">2 PEPs 252 and</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node5.html">4 PEP 255: Simple</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION000400000000000000000">
+3 PEP 234: Iterators</A>
+</H1>
+
+<P>
+Another significant addition to 2.2 is an iteration interface at both
+the C and Python levels.  Objects can define how they can be looped
+over by callers.
+
+<P>
+In Python versions up to 2.1, the usual way to make <code>for item in
+obj</code> work is to define a <tt class="method">__getitem__()</tt> method that looks
+something like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+    def __getitem__(self, index):
+        return &lt;next item&gt;
+</pre></dl>
+
+<P>
+<tt class="method">__getitem__()</tt> is more properly used to define an indexing
+operation on an object so that you can write <code>obj[5]</code> to retrieve
+the sixth element.  It's a bit misleading when you're using this only
+to support <tt class="keyword">for</tt> loops.  Consider some file-like object that
+wants to be looped over; the <var>index</var> parameter is essentially
+meaningless, as the class probably assumes that a series of
+<tt class="method">__getitem__()</tt> calls will be made with <var>index</var>
+incrementing by one each time.  In other words, the presence of the
+<tt class="method">__getitem__()</tt> method doesn't mean that using <code>file[5]</code> 
+to randomly access the sixth element will work, though it really should.
+
+<P>
+In Python 2.2, iteration can be implemented separately, and
+<tt class="method">__getitem__()</tt> methods can be limited to classes that really
+do support random access.  The basic idea of iterators is 
+simple.  A new built-in function, <tt class="function">iter(obj)</tt> or
+<code>iter(<var>C</var>, <var>sentinel</var>)</code>, is used to get an iterator.
+<tt class="function">iter(obj)</tt> returns an iterator for the object <var>obj</var>,
+while <code>iter(<var>C</var>, <var>sentinel</var>)</code> returns an iterator that
+will invoke the callable object <var>C</var> until it returns
+<var>sentinel</var> to signal that the iterator is done.  
+
+<P>
+Python classes can define an <tt class="method">__iter__()</tt> method, which should
+create and return a new iterator for the object; if the object is its
+own iterator, this method can just return <code>self</code>.  In particular,
+iterators will usually be their own iterators.  Extension types
+implemented in C can implement a <tt class="member">tp_iter</tt> function in order to
+return an iterator, and extension types that want to behave as
+iterators can define a <tt class="member">tp_iternext</tt> function.
+
+<P>
+So, after all this, what do iterators actually do?  They have one
+required method, <tt class="method">next()</tt>, which takes no arguments and returns
+the next value.  When there are no more values to be returned, calling
+<tt class="method">next()</tt> should raise the <tt class="exception">StopIteration</tt> exception.
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; L = [1,2,3]
+&gt;&gt;&gt; i = iter(L)
+&gt;&gt;&gt; print i
+&lt;iterator object at 0x8116870&gt;
+&gt;&gt;&gt; i.next()
+1
+&gt;&gt;&gt; i.next()
+2
+&gt;&gt;&gt; i.next()
+3
+&gt;&gt;&gt; i.next()
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+StopIteration
+&gt;&gt;&gt;
+</pre></dl>
+
+<P>
+In 2.2, Python's <tt class="keyword">for</tt> statement no longer expects a sequence;
+it expects something for which <tt class="function">iter()</tt> will return an iterator.
+For backward compatibility and convenience, an iterator is
+automatically constructed for sequences that don't implement
+<tt class="method">__iter__()</tt> or a <tt class="member">tp_iter</tt> slot, so <code>for i in
+[1,2,3]</code> will still work.  Wherever the Python interpreter loops over
+a sequence, it's been changed to use the iterator protocol.  This
+means you can do things like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; L = [1,2,3]
+&gt;&gt;&gt; i = iter(L)
+&gt;&gt;&gt; a,b,c = i
+&gt;&gt;&gt; a,b,c
+(1, 2, 3)
+</pre></dl>
+
+<P>
+Iterator support has been added to some of Python's basic types.  
+Calling <tt class="function">iter()</tt> on a dictionary will return an iterator
+which loops over its keys:
+
+<P>
+<dl><dd><pre class="verbatim">
+&gt;&gt;&gt; m = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+...      'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
+&gt;&gt;&gt; for key in m: print key, m[key]
+...
+Mar 3
+Feb 2
+Aug 8
+Sep 9
+May 5
+Jun 6
+Jul 7
+Jan 1
+Apr 4
+Nov 11
+Dec 12
+Oct 10
+</pre></dl>          
+
+<P>
+That's just the default behaviour.  If you want to iterate over keys,
+values, or key/value pairs, you can explicitly call the
+<tt class="method">iterkeys()</tt>, <tt class="method">itervalues()</tt>, or <tt class="method">iteritems()</tt>
+methods to get an appropriate iterator.  In a minor related change,
+the <tt class="keyword">in</tt> operator now works on dictionaries, so
+<code><var>key</var> in dict</code> is now equivalent to
+<code>dict.has_key(<var>key</var>)</code>.
+
+<P>
+Files also provide an iterator, which calls the <tt class="method">readline()</tt>
+method until there are no more lines in the file.  This means you can
+now read each line of a file using code like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+for line in file:
+    # do something for each line
+    ...
+</pre></dl>
+
+<P>
+Note that you can only go forward in an iterator; there's no way to
+get the previous element, reset the iterator, or make a copy of it.
+An iterator object could provide such additional capabilities, but the
+iterator protocol only requires a <tt class="method">next()</tt> method.
+
+<P>
+<div class="seealso">
+  <p class="heading"><b>See Also:</b></p>
+
+<P>
+<dl compact class="seerfc">
+    <dt><a href="http://www.python.org/peps/pep-0234.html"
+        title="Iterators"
+        >PEP 234, <em>Iterators</em></a>
+    <dd>Written by Ka-Ping Yee and GvR; implemented 
+by the Python Labs crew, mostly by GvR and Tim Peters.
+  </dl>
+
+<P>
+</div>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="sect-rellinks.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node5.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="sect-rellinks.html">2 PEPs 252 and</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node5.html">4 PEP 255: Simple</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

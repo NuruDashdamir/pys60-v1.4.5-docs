@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>2.10.1 ProgressBar Objects </title>
+<META NAME="description" CONTENT="2.10.1 ProgressBar Objects ">
+<META NAME="keywords" CONTENT="mac">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="mac.css">
+<link rel="first" href="mac.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="module-EasyDialogs.html">
+<LINK REL="up" href="module-EasyDialogs.html">
+<LINK REL="next" href="module-FrameWork.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-EasyDialogs.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-EasyDialogs.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-FrameWork.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Macintosh Library Modules</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-EasyDialogs.html">2.10 EasyDialogs  </A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-EasyDialogs.html">2.10 EasyDialogs  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-FrameWork.html">2.11 FrameWork  </A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0041010000000000000000">&nbsp;</A>
+<BR>
+2.10.1 ProgressBar Objects 
+</H2>
+
+<P>
+<tt class="class">ProgressBar</tt> objects provide support for modeless progress-bar
+dialogs.  Both determinate (thermometer style) and indeterminate
+(barber-pole style) progress bars are supported.  The bar will be
+determinate if its maximum value is greater than zero; otherwise it
+will be indeterminate.
+
+<span class="versionnote">Changed in version 2.2:
+Support for indeterminate-style progress bars was
+                added.</span>
+
+<P>
+The dialog is displayed immediately after creation. If the dialog's
+``Cancel'' button is pressed, or if <kbd>Cmd-.</kbd> or <kbd>ESC</kbd> is typed,
+the dialog window is hidden and <tt class="exception">KeyboardInterrupt</tt> is
+raised (but note that this response does not occur until the progress
+bar is next updated, typically via a call to <tt class="method">inc()</tt> or
+<tt class="method">set()</tt>).  Otherwise, the bar remains visible until the
+<tt class="class">ProgressBar</tt> object is discarded.
+
+<P>
+<tt class="class">ProgressBar</tt> objects possess the following attributes and
+methods:
+
+<P>
+<dl><dt><b><a name="l2h-131"><tt class="member">curval</tt></a></b>
+<dd>
+The current value (of type integer or long integer) of the progress
+bar.  The normal access methods coerce <tt class="member">curval</tt> between
+<code>0</code> and <tt class="member">maxval</tt>.  This attribute should not be altered
+directly.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-132"><tt class="member">maxval</tt></a></b>
+<dd>
+The maximum value (of type integer or long integer) of the progress
+bar; the progress bar (thermometer style) is full when <tt class="member">curval</tt>
+equals <tt class="member">maxval</tt>.  If <tt class="member">maxval</tt> is <code>0</code>, the bar will
+be indeterminate (barber-pole).  This attribute should not be altered
+directly.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-133"><tt class="method">title</tt></a></b>(<big>[</big><var>newstr</var><big>]</big>)
+<dd>
+Sets the text in the title bar of the progress dialog to
+<var>newstr</var>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-134"><tt class="method">label</tt></a></b>(<big>[</big><var>newstr</var><big>]</big>)
+<dd>
+Sets the text in the progress box of the progress dialog to
+<var>newstr</var>.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-135"><tt class="method">set</tt></a></b>(<var>value</var><big>[</big><var>, max</var><big>]</big>)
+<dd>
+Sets the progress bar's <tt class="member">curval</tt> to <var>value</var>, and also
+<tt class="member">maxval</tt> to <var>max</var> if the latter is provided.  <var>value</var>
+is first coerced between 0 and <tt class="member">maxval</tt>.  The thermometer bar
+is updated to reflect the changes, including a change from
+indeterminate to determinate or vice versa.
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-136"><tt class="method">inc</tt></a></b>(<big>[</big><var>n</var><big>]</big>)
+<dd>
+Increments the progress bar's <tt class="member">curval</tt> by <var>n</var>, or by <code>1</code>
+if <var>n</var> is not provided.  (Note that <var>n</var> may be negative, in
+which case the effect is a decrement.)  The progress bar is updated to
+reflect the change.  If the bar is indeterminate, this causes one
+``spin'' of the barber pole.  The resulting <tt class="member">curval</tt> is coerced
+between 0 and <tt class="member">maxval</tt> if incrementing causes it to fall
+outside this range.
+</dl>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="module-EasyDialogs.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-EasyDialogs.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-FrameWork.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Macintosh Library Modules</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="module-EasyDialogs.html">2.10 EasyDialogs  </A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-EasyDialogs.html">2.10 EasyDialogs  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-FrameWork.html">2.11 FrameWork  </A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

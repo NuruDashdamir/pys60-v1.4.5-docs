@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>5.3.8 Getting Extended Error Information </title>
+<META NAME="description" CONTENT="5.3.8 Getting Extended Error Information ">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="testloader-objects.html">
+<LINK REL="up" href="module-unittest.html">
+<LINK REL="next" href="module-math.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="testloader-objects.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-unittest.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-math.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="testloader-objects.html">5.3.7 TestLoader Objects</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-unittest.html">5.3 unittest  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-math.html">5.4 math  </A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION007380000000000000000">&nbsp;</A>
+<BR>
+5.3.8 Getting Extended Error Information
+            
+</H2>
+
+<P>
+Some applications can make use of more error information (for example,
+an integrated development environment, or IDE).  Such an application
+can retrieve supplemental information about errors and failures by
+using an alternate <tt class="class">TestResult</tt> implementation, and extending
+the <tt class="method">defaultTestResult()</tt> method of the <tt class="class">TestCase</tt> class
+to provide it.
+
+<P>
+Here is a brief example of a <tt class="class">TestResult</tt> subclass which stores
+the actual exception and traceback objects.  (Be aware that storing
+traceback objects can cause a great deal of memory not to be reclaimed
+when it otherwise would be, which can have effects that affect the
+behavior of the tests.)
+
+<P>
+<dl><dd><pre class="verbatim">
+import unittest
+
+class MyTestCase(unittest.TestCase):
+    def defaultTestResult(self):
+        return MyTestResult()
+
+class MyTestResult(unittest.TestResult):
+    def __init__(self):
+        self.errors_tb = []
+        self.failures_tb = []
+
+    def addError(self, test, err):
+        self.errors_tb.append((test, err))
+        unittest.TestResult.addError(self, test, err)
+
+    def addFailure(self, test, err):
+        self.failures_tb.append((test, err))
+        unittest.TestResult.addFailure(self, test, err)
+</pre></dl>
+
+<P>
+Tests written using <tt class="class">MyTestCase</tt> as the base class, instead of
+<tt class="class">TestCase</tt>, will allow tools to extract additional information
+from the results object.
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="testloader-objects.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-unittest.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="module-math.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="testloader-objects.html">5.3.7 TestLoader Objects</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-unittest.html">5.3 unittest  </A>
+<b class="navlabel">Next:</b> <a class="sectref" href="module-math.html">5.4 math  </A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

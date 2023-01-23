@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>4.1.1 Interaction with dynamic features </title>
+<META NAME="description" CONTENT="4.1.1 Interaction with dynamic features ">
+<META NAME="keywords" CONTENT="ref">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ref.css">
+<link rel="first" href="ref.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="naming.html">
+<LINK REL="up" href="naming.html">
+<LINK REL="next" href="exceptions.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="naming.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="naming.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="exceptions.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="naming.html">4.1 Naming and binding</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="naming.html">4.1 Naming and binding</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="exceptions.html">4.2 Exceptions</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION006110000000000000000">&nbsp;</A>
+<BR>
+4.1.1 Interaction with dynamic features 
+</H2>
+
+<P>
+There are several cases where Python statements are illegal when
+used in conjunction with nested scopes that contain free
+variables.
+
+<P>
+If a variable is referenced in an enclosing scope, it is illegal
+to delete the name.  An error will be reported at compile time.
+
+<P>
+If the wild card form of import -- "<tt class="samp">import *</tt>" -- is used in a
+function and the function contains or is a nested block with free
+variables, the compiler will raise a SyntaxError.
+
+<P>
+If <tt class="keyword">exec</tt> is used in a function and the function contains or
+is a nested block with free variables, the compiler will raise a
+<tt class="exception">SyntaxError</tt> unless the exec explicitly specifies the local
+namespace for the <tt class="keyword">exec</tt>.  (In other words, "<tt class="samp">exec obj</tt>"would be illegal, but "<tt class="samp">exec obj in ns</tt>" would be legal.)
+
+<P>
+The <tt class="function">eval()</tt>, <tt class="function">execfile()</tt>, and <tt class="function">input()</tt>
+functions and the <tt class="keyword">exec</tt> statement do not have access to the
+full environment for resolving names.  Names may be resolved in the
+local and global namespaces of the caller.  Free variables are not
+resolved in the nearest enclosing namespace, but in the global
+namespace.<A NAME="tex2html1"
+  HREF="#foot2707"><SUP>4.1</SUP></A>The <tt class="keyword">exec</tt> statement and the <tt class="function">eval()</tt> and
+<tt class="function">execfile()</tt> functions have optional arguments to override
+the global and local namespace.  If only one namespace is specified,
+it is used for both.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot2707">...
+namespace.</A><A NAME="foot2707"
+ HREF="node41.html#tex2html1"><SUP>4.1</SUP></A>
+<DD>This limitation occurs because the code that is
+    executed by these operations is not available at the time the
+    module is compiled.
+
+</DL>
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="naming.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="naming.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="exceptions.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="naming.html">4.1 Naming and binding</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="naming.html">4.1 Naming and binding</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="exceptions.html">4.2 Exceptions</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

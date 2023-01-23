@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>12.2.3 Generating MIME documents</title>
+<META NAME="description" CONTENT="12.2.3 Generating MIME documents">
+<META NAME="keywords" CONTENT="lib">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="lib.css">
+<link rel="first" href="lib.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" HREF="node387.html">
+<LINK REL="previous" href="module-email.Parser.html">
+<LINK REL="up" href="module-email.html">
+<LINK REL="next" HREF="node386.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node384.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node386.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node384.html">12.2.2.2 Additional notes</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node386.html">12.2.3.1 Deprecated methods</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION0014230000000000000000">
+12.2.3 Generating MIME documents</A>
+</H2>
+
+
+<P>
+One of the most common tasks is to generate the flat text of the email
+message represented by a message object structure.  You will need to do
+this if you want to send your message via the <tt class="module"><a href="module-smtplib.html">smtplib</a></tt>
+module or the <tt class="module"><a href="module-nntplib.html">nntplib</a></tt> module, or print the message on the
+console.  Taking a message object structure and producing a flat text
+document is the job of the <tt class="class">Generator</tt> class.
+
+<P>
+Again, as with the <tt class="module"><a href="module-email.Parser.html">email.Parser</a></tt> module, you aren't limited
+to the functionality of the bundled generator; you could write one
+from scratch yourself.  However the bundled generator knows how to
+generate most email in a standards-compliant way, should handle MIME
+and non-MIME email messages just fine, and is designed so that the
+transformation from flat text, to a message structure via the
+<tt class="class">Parser</tt> class, and back to flat text, is idempotent (the input
+is identical to the output).
+
+<P>
+Here are the public methods of the <tt class="class">Generator</tt> class:
+
+<P>
+<dl><dt><b><span class="typelabel">class</span> <a name="l2h-2854"><tt class="class">Generator</tt></a></b>(<var>outfp</var><big>[</big><var>, mangle_from_</var><big>[</big><var>,
+    maxheaderlen</var><big>]</big><big>]</big>)
+<dd>
+The constructor for the <tt class="class">Generator</tt> class takes a file-like
+object called <var>outfp</var> for an argument.  <var>outfp</var> must support
+the <tt class="method">write()</tt> method and be usable as the output file in a
+Python extended print statement.
+
+<P>
+Optional <var>mangle_from_</var> is a flag that, when <code>True</code>, puts a
+"<tt class="samp">&gt;</tt>" character in front of any line in the body that starts exactly as
+"<tt class="samp">From </tt>", i.e. <code>From</code> followed by a space at the beginning of the
+line.  This is the only guaranteed portable way to avoid having such
+lines be mistaken for a Unix mailbox format envelope header separator (see
+<a class="ulink" href="http://home.netscape.com/eng/mozilla/2.0/relnotes/demo/content-length.html"
+  >WHY THE CONTENT-LENGTH FORMAT IS BAD</a>
+for details).  <var>mangle_from_</var> defaults to <code>True</code>, but you
+might want to set this to <code>False</code> if you are not writing Unix
+mailbox format files.
+
+<P>
+Optional <var>maxheaderlen</var> specifies the longest length for a
+non-continued header.  When a header line is longer than
+<var>maxheaderlen</var> (in characters, with tabs expanded to 8 spaces),
+the header will be broken on semicolons and continued as per
+<a class="rfc" name="rfcref-65634"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>.  If no semicolon is found, then the header is left alone.
+Set to zero to disable wrapping headers.  Default is 78, as
+recommended (but not required) by <a class="rfc" name="rfcref-65636"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a>.
+</dl>
+
+<P>
+The other public <tt class="class">Generator</tt> methods are:
+
+<P>
+<dl><dt><b><a name="l2h-2855"><tt class="method">flatten</tt></a></b>(<var>msg</var><big>[</big><var>, unixfrom</var><big>]</big>)
+<dd>
+Print the textual representation of the message object structure rooted at
+<var>msg</var> to the output file specified when the <tt class="class">Generator</tt>
+instance was created.  Subparts are visited depth-first and the
+resulting text will be properly MIME encoded.
+
+<P>
+Optional <var>unixfrom</var> is a flag that forces the printing of the
+envelope header delimiter before the first <a class="rfc" name="rfcref-65638"
+href="http://www.faqs.org/rfcs/rfc2822.html">RFC 2822</a> header of the
+root message object.  If the root object has no envelope header, a
+standard one is crafted.  By default, this is set to <code>False</code> to
+inhibit the printing of the envelope delimiter.
+
+<P>
+Note that for subparts, no envelope header is ever printed.
+
+<P>
+
+<span class="versionnote">New in version 2.2.2.</span>
+
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2856"><tt class="method">clone</tt></a></b>(<var>fp</var>)
+<dd>
+Return an independent clone of this <tt class="class">Generator</tt> instance with
+the exact same options.
+
+<P>
+
+<span class="versionnote">New in version 2.2.2.</span>
+
+</dl>
+
+<P>
+<dl><dt><b><a name="l2h-2857"><tt class="method">write</tt></a></b>(<var>s</var>)
+<dd>
+Write the string <var>s</var> to the underlying file object,
+i.e. <var>outfp</var> passed to <tt class="class">Generator</tt>'s constructor.  This
+provides just enough file-like API for <tt class="class">Generator</tt> instances to
+be used in extended print statements.
+</dl>
+
+<P>
+As a convenience, see the methods <tt class="method">Message.as_string()</tt> and
+<code>str(aMessage)</code>, a.k.a. <tt class="method">Message.__str__()</tt>, which
+simplify the generation of a formatted string representation of a
+message object.  For more detail, see <tt class="module"><a href="module-email.Message.html">email.Message</a></tt>.
+
+<P>
+The <tt class="module">email.Generator</tt> module also provides a derived class,
+called <tt class="class">DecodedGenerator</tt> which is like the <tt class="class">Generator</tt>
+base class, except that non-<span class="mimetype">text</span> parts are substituted with
+a format string representing the part.
+
+<P>
+<dl><dt><b><span class="typelabel">class</span> <a name="l2h-2858"><tt class="class">DecodedGenerator</tt></a></b>(<var>outfp</var><big>[</big><var>, mangle_from_</var><big>[</big><var>,
+    maxheaderlen</var><big>[</big><var>, fmt</var><big>]</big><big>]</big><big>]</big>)
+<dd>
+
+<P>
+This class, derived from <tt class="class">Generator</tt> walks through all the
+subparts of a message.  If the subpart is of main type
+<span class="mimetype">text</span>, then it prints the decoded payload of the subpart.
+Optional <var>_mangle_from_</var> and <var>maxheaderlen</var> are as with the
+<tt class="class">Generator</tt> base class.
+
+<P>
+If the subpart is not of main type <span class="mimetype">text</span>, optional <var>fmt</var>
+is a format string that is used instead of the message payload.
+<var>fmt</var> is expanded with the following keywords, "<tt class="samp">%(keyword)s</tt>"format:
+
+<P>
+
+<UL>
+<LI><code>type</code> - Full MIME type of the non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+<LI><code>maintype</code> - Main MIME type of the non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+<LI><code>subtype</code> - Sub-MIME type of the non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+<LI><code>filename</code> - Filename of the non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+<LI><code>description</code> - Description associated with the
+      non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+<LI><code>encoding</code> - Content transfer encoding of the
+      non-<span class="mimetype">text</span> part
+
+<P>
+</LI>
+</UL>
+
+<P>
+The default value for <var>fmt</var> is <code>None</code>, meaning
+
+<P>
+<dl><dd><pre class="verbatim">
+[Non-text (%(type)s) part of message omitted, filename %(filename)s]
+</pre></dl>
+
+<P>
+
+<span class="versionnote">New in version 2.2.2.</span>
+
+</dl>
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="node386.html">12.2.3.1 Deprecated methods</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node384.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="module-email.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node386.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Library Reference</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><a href="modindex.html" title="Module Index"><img src="../icons/modules.gif"
+  border="0" height="32"
+  alt="Module Index" width="32"></a></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node384.html">12.2.2.2 Additional notes</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="module-email.html">12.2 email  </A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node386.html">12.2.3.1 Deprecated methods</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

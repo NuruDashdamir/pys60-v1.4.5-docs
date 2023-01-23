@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3.1 Distributing your extension modules </title>
+<META NAME="description" CONTENT="3.1 Distributing your extension modules ">
+<META NAME="keywords" CONTENT="ext">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ext.css">
+<link rel="first" href="ext.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="previous" href="building.html">
+<LINK REL="up" href="building.html">
+<LINK REL="next" href="building-on-windows.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="building.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="building-on-windows.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building.html">3. Building C and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="building.html">3. Building C and</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="building-on-windows.html">4. Building C and</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005100000000000000000">&nbsp;</A>
+<BR>
+3.1 Distributing your extension modules
+     
+</H1>
+
+<P>
+When an extension has been successfully build, there are three ways to
+use it.
+
+<P>
+End-users will typically want to install the module, they do so by
+running
+
+<P>
+<dl><dd><pre class="verbatim">
+python setup.py install
+</pre></dl>
+
+<P>
+Module maintainers should produce source packages; to do so, they run
+
+<P>
+<dl><dd><pre class="verbatim">
+python setup.py sdist
+</pre></dl>
+
+<P>
+In some cases, additional files need to be included in a source
+distribution; this is done through a <span class="file">MANIFEST.in</span> file; see the
+distutils documentation for details.
+
+<P>
+If the source distribution has been build successfully, maintainers
+can also create binary distributions. Depending on the platform, one
+of the following commands can be used to do so.
+
+<P>
+<dl><dd><pre class="verbatim">
+python setup.py bdist_wininst
+python setup.py bdist_rpm
+python setup.py bdist_dumb
+</pre></dl>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="building.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="building.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="building-on-windows.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="building.html">3. Building C and</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="building.html">3. Building C and</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="building-on-windows.html">4. Building C and</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

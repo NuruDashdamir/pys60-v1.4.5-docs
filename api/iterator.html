@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>6.5 Iterator Protocol </title>
+<META NAME="description" CONTENT="6.5 Iterator Protocol ">
+<META NAME="keywords" CONTENT="api">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="api.css">
+<link rel="first" href="api.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" href="abstract-buffer.html">
+<LINK REL="previous" href="mapping.html">
+<LINK REL="up" href="abstract.html">
+<LINK REL="next" href="abstract-buffer.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="mapping.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="abstract.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="abstract-buffer.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python/C API Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="mapping.html">6.4 Mapping Protocol</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="abstract.html">6. Abstract Objects Layer</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="abstract-buffer.html">6.6 Buffer Protocol</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008500000000000000000">&nbsp;</A>
+<BR>
+6.5 Iterator Protocol 
+</H1>
+
+<P>
+
+<span class="versionnote">New in version 2.2.</span>
+
+<P>
+There are only a couple of functions specifically for working with
+iterators.
+
+<P>
+<dl><dt>int <b><a name="l2h-280"><tt class="cfunction">PyIter_Check</tt></a></b>(<var>PyObject *o</var>)
+<dd>
+  Return true if the object <var>o</var> supports the iterator protocol.
+</dl>
+
+<P>
+<dl><dt>PyObject* <b><a name="l2h-281"><tt class="cfunction">PyIter_Next</tt></a></b>(<var>PyObject *o</var>)
+<dd>
+<div class="refcount-info">
+  <span class="label">Return value:</span>
+  <span class="value">New reference.</span>
+</div>
+  Return the next value from the iteration <var>o</var>.  If the object is
+  an iterator, this retrieves the next value from the iteration, and
+  returns <tt class="constant">NULL</tt> with no exception set if there are no remaining
+  items.  If the object is not an iterator, <tt class="exception">TypeError</tt> is
+  raised, or if there is an error in retrieving the item, returns
+  <tt class="constant">NULL</tt> and passes along the exception.
+</dl>
+
+<P>
+To write a loop which iterates over an iterator, the C code should
+look something like this:
+
+<P>
+<dl><dd><pre class="verbatim">
+PyObject *iterator = PyObject_GetIter(obj);
+PyObject *item;
+
+if (iterator == NULL) {
+    /* propagate error */
+}
+
+while (item = PyIter_Next(iterator)) {
+    /* do something with item */
+    ...
+    /* release reference when done */
+    Py_DECREF(item);
+}
+
+Py_DECREF(iterator);
+
+if (PyErr_Occurred()) {
+    /* propagate error */
+}
+else {
+    /* continue doing useful work */
+}
+</pre></dl>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="mapping.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="abstract.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="abstract-buffer.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python/C API Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="mapping.html">6.4 Mapping Protocol</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="abstract.html">6. Abstract Objects Layer</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="abstract-buffer.html">6.6 Buffer Protocol</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

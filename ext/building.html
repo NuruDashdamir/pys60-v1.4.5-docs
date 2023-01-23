@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3. Building C and C++ Extensions with distutils </title>
+<META NAME="description" CONTENT="3. Building C and C++ Extensions with distutils ">
+<META NAME="keywords" CONTENT="ext">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ext.css">
+<link rel="first" href="ext.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" href="building-on-windows.html">
+<LINK REL="previous" href="defining-new-types.html">
+<LINK REL="up" HREF="ext.html">
+<LINK REL="next" href="distributing.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node28.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="ext.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="distributing.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node28.html">2.2.6 More Suggestions</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="ext.html">Extending and Embedding the</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="distributing.html">3.1 Distributing your extension</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION005000000000000000000">&nbsp;</A>
+<BR>
+3. Building C and C++ Extensions with distutils
+     
+</H1>
+
+<P>
+
+<P>
+Starting in Python 1.4, Python provides, on Unix, a special make
+file for building make files for building dynamically-linked
+extensions and custom interpreters.  Starting with Python 2.0, this
+mechanism (known as related to Makefile.pre.in, and Setup files) is no
+longer supported. Building custom interpreters was rarely used, and
+extension modules can be built using distutils.
+
+<P>
+Building an extension module using distutils requires that distutils
+is installed on the build machine, which is included in Python 2.x and
+available separately for Python 1.5. Since distutils also supports
+creation of binary packages, users don't necessarily need a compiler
+and distutils to install the extension.
+
+<P>
+A distutils package contains a driver script, <span class="file">setup.py</span>. This is
+a plain Python file, which, in the most simple case, could look like
+this:
+
+<P>
+<dl><dd><pre class="verbatim">
+from distutils.core import setup, Extension
+
+module1 = Extension('demo',
+                    sources = ['demo.c'])
+
+setup (name = 'PackageName',
+       version = '1.0',
+       description = 'This is a demo package',
+       ext_modules = [module1])
+</pre></dl>
+
+<P>
+With this <span class="file">setup.py</span>, and a file <span class="file">demo.c</span>, running
+
+<P>
+<dl><dd><pre class="verbatim">
+python setup.py build
+</pre></dl>
+
+<P>
+will compile <span class="file">demo.c</span>, and produce an extension module named
+"<tt class="samp">demo</tt>" in the <span class="file">build</span> directory. Depending on the system,
+the module file will end up in a subdirectory <span class="file">build/lib.system</span>,
+and may have a name like <span class="file">demo.so</span> or <span class="file">demo.pyd</span>.
+
+<P>
+In the <span class="file">setup.py</span>, all execution is performed by calling the
+"<tt class="samp">setup</tt>" function. This takes a variable number of keyword 
+arguments, of which the example above uses only a
+subset. Specifically, the example specifies meta-information to build
+packages, and it specifies the contents of the package.  Normally, a
+package will contain of addition modules, like Python source modules,
+documentation, subpackages, etc. Please refer to the distutils
+documentation in <em class="citetitle"><a
+ href="../dist/dist.html"
+ title="Distributing Python
+Modules"
+ >Distributing Python
+Modules</a></em> to learn more about the features of distutils; this section
+explains building extension modules only.
+
+<P>
+It is common to pre-compute arguments to <tt class="function">setup</tt>, to better
+structure the driver script. In the example above,
+the"<tt class="samp">ext_modules</tt>" argument to <tt class="function">setup</tt> is a list of
+extension modules, each of which is an instance of the
+<tt class="class">Extension</tt>. In the example, the instance defines an extension
+named "<tt class="samp">demo</tt>" which is build by compiling a single source file,
+<span class="file">demo.c</span>.
+
+<P>
+In many cases, building an extension is more complex, since additional
+preprocessor defines and libraries may be needed. This is demonstrated
+in the example below.
+
+<P>
+<dl><dd><pre class="verbatim">
+from distutils.core import setup, Extension
+
+module1 = Extension('demo',
+                    define_macros = [('MAJOR_VERSION', '1'),
+                                     ('MINOR_VERSION', '0')],
+                    include_dirs = ['/usr/local/include'],
+                    libraries = ['tcl83'],
+                    library_dirs = ['/usr/local/lib'],
+                    sources = ['demo.c'])
+
+setup (name = 'PackageName',
+       version = '1.0',
+       description = 'This is a demo package',
+       author = 'Martin v. Loewis',
+       author_email = 'martin@v.loewis.de',
+       url = 'http://www.python.org/doc/current/ext/building.html',
+       long_description = '''
+This is really just a demo package.
+''',
+       ext_modules = [module1])
+</pre></dl>
+
+<P>
+In this example, <tt class="function">setup</tt> is called with additional
+meta-information, which is recommended when distribution packages have
+to be built. For the extension itself, it specifies preprocessor
+defines, include directories, library directories, and libraries.
+Depending on the compiler, distutils passes this information in
+different ways to the compiler. For example, on Unix, this may
+result in the compilation commands
+
+<P>
+<dl><dd><pre class="verbatim">
+gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 -I/usr/local/include -I/usr/local/include/python2.2 -c demo.c -o build/temp.linux-i686-2.2/demo.o
+
+gcc -shared build/temp.linux-i686-2.2/demo.o -L/usr/local/lib -ltcl83 -o build/lib.linux-i686-2.2/demo.so
+</pre></dl>
+
+<P>
+These lines are for demonstration purposes only; distutils users
+should trust that distutils gets the invocations right.
+
+<P>
+
+<p><hr>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></a>
+
+<UL CLASS="ChildLinks">
+<LI><A href="distributing.html">3.1 Distributing your extension modules</a>
+</ul>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node28.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="ext.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="distributing.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Extending and Embedding the Python Interpreter</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node28.html">2.2.6 More Suggestions</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="ext.html">Extending and Embedding the</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="distributing.html">3.1 Distributing your extension</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

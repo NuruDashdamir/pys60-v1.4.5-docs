@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>11 Other Changes and Fixes</title>
+<META NAME="description" CONTENT="11 Other Changes and Fixes">
+<META NAME="keywords" CONTENT="whatsnew22">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="whatsnew22.css">
+<link rel="first" href="whatsnew22.html">
+<link rel="contents" href="contents.html" title="Contents">
+
+<LINK REL="next" HREF="node13.html">
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="whatsnew22.html">
+<LINK REL="next" HREF="node13.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node11.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node13.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node11.html">10 Interpreter Changes and</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node13.html">12 Acknowledgements</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION0001200000000000000000">
+11 Other Changes and Fixes</A>
+</H1>
+
+<P>
+As usual there were a bunch of other improvements and bugfixes
+scattered throughout the source tree.  A search through the CVS change
+logs finds there were 527 patches applied, and 683 bugs fixed; both
+figures are likely to be underestimates.  Some of the more notable
+changes are:
+
+<P>
+
+<UL>
+<LI>The code for the MacOS port for Python, maintained by Jack
+  Jansen, is now kept in the main Python CVS tree, and many changes
+  have been made to support MacOS&nbsp;X.
+
+<P>
+The most significant change is the ability to build Python as a
+framework, enabled by supplying the <b class="programopt">--enable-framework</b>
+option to the configure script when compiling Python.  According to
+Jack Jansen, ``This installs a self-contained Python installation plus
+the OS&nbsp;X framework "glue" into
+<span class="file">/Library/Frameworks/Python.framework</span> (or another location of
+choice).  For now there is little immediate added benefit to this
+(actually, there is the disadvantage that you have to change your PATH
+to be able to find Python), but it is the basis for creating a
+full-blown Python application, porting the MacPython IDE, possibly
+using Python as a standard OSA scripting language and much more.''
+
+<P>
+Most of the MacPython toolbox modules, which interface to MacOS APIs
+such as windowing, QuickTime, scripting, etc. have been ported to OS&nbsp;X,
+but they've been left commented out in <span class="file">setup.py</span>.  People who want
+to experiment with these modules can uncomment them manually.
+
+<P>
+</LI>
+<LI>Keyword arguments passed to builtin functions that don't take them
+  now cause a <tt class="exception">TypeError</tt> exception to be raised, with the
+  message "<var>function</var> takes no keyword arguments".
+
+<P>
+</LI>
+<LI>Weak references, added in Python 2.1 as an extension module,
+  are now part of the core because they're used in the implementation
+  of new-style classes.  The <tt class="exception">ReferenceError</tt> exception has
+  therefore moved from the <tt class="module">weakref</tt> module to become a
+  built-in exception.
+
+<P>
+</LI>
+<LI>A new script, <span class="file">Tools/scripts/cleanfuture.py</span> by Tim
+  Peters, automatically removes obsolete <code>__future__</code> statements
+  from Python source code.
+
+<P>
+</LI>
+<LI>An additional <var>flags</var> argument has been added to the
+  built-in function <tt class="function">compile()</tt>, so the behaviour of
+  <code>__future__</code> statements can now be correctly observed in
+  simulated shells, such as those presented by IDLE and other
+  development environments.  This is described in <a class="rfc" name="rfcref-1195"
+href="http://www.python.org/peps/pep-0264.html">PEP 264</a>.
+  (Contributed by Michael Hudson.)
+
+<P>
+</LI>
+<LI>The new license introduced with Python 1.6 wasn't
+  GPL-compatible.  This is fixed by some minor textual changes to the
+  2.2 license, so it's now legal to embed Python inside a GPLed
+  program again.  Note that Python itself is not GPLed, but instead is
+  under a license that's essentially equivalent to the BSD license,
+  same as it always was.  The license changes were also applied to the
+  Python 2.0.1 and 2.1.1 releases.
+
+<P>
+</LI>
+<LI>When presented with a Unicode filename on Windows, Python will
+  now convert it to an MBCS encoded string, as used by the Microsoft
+  file APIs.  As MBCS is explicitly used by the file APIs, Python's
+  choice of ASCII as the default encoding turns out to be an
+  annoyance.  On Unix, the locale's character set is used if
+  <tt class="function">locale.nl_langinfo(CODESET)</tt> is available.  (Windows
+  support was contributed by Mark Hammond with assistance from
+  Marc-Andr&#233; Lemburg. Unix support was added by Martin von L&#246;wis.)
+
+<P>
+</LI>
+<LI>Large file support is now enabled on Windows.  (Contributed by
+  Tim Peters.)
+
+<P>
+</LI>
+<LI>The <span class="file">Tools/scripts/ftpmirror.py</span> script
+  now parses a <span class="file">.netrc</span> file, if you have one.
+  (Contributed by Mike Romberg.) 
+
+<P>
+</LI>
+<LI>Some features of the object returned by the
+  <tt class="function">xrange()</tt> function are now deprecated, and trigger
+  warnings when they're accessed; they'll disappear in Python 2.3.
+  <tt class="class">xrange</tt> objects tried to pretend they were full sequence
+  types by supporting slicing, sequence multiplication, and the
+  <tt class="keyword">in</tt> operator, but these features were rarely used and
+  therefore buggy.  The <tt class="method">tolist()</tt> method and the
+  <tt class="member">start</tt>, <tt class="member">stop</tt>, and <tt class="member">step</tt> attributes are also
+  being deprecated.  At the C level, the fourth argument to the
+  <tt class="cfunction">PyRange_New()</tt> function, "<tt class="samp">repeat</tt>", has also been
+  deprecated.
+
+<P>
+</LI>
+<LI>There were a bunch of patches to the dictionary
+  implementation, mostly to fix potential core dumps if a dictionary
+  contains objects that sneakily changed their hash value, or mutated
+  the dictionary they were contained in. For a while python-dev fell
+  into a gentle rhythm of Michael Hudson finding a case that dumped
+  core, Tim Peters fixing the bug, Michael finding another case, and round
+  and round it went.   
+
+<P>
+</LI>
+<LI>On Windows, Python can now be compiled with Borland C thanks
+  to a number of patches contributed by Stephen Hansen, though the
+  result isn't fully functional yet.  (But this <i>is</i> progress...)
+
+<P>
+</LI>
+<LI>Another Windows enhancement: Wise Solutions generously offered
+  PythonLabs use of their InstallerMaster 8.1 system.  Earlier
+  PythonLabs Windows installers used Wise 5.0a, which was beginning to
+  show its age.  (Packaged up by Tim Peters.)
+
+<P>
+</LI>
+<LI>Files ending in "<tt class="samp">.pyw</tt>" can now be imported on Windows.
+  "<tt class="samp">.pyw</tt>" is a Windows-only thing, used to indicate that a script
+  needs to be run using PYTHONW.EXE instead of PYTHON.EXE in order to
+  prevent a DOS console from popping up to display the output.  This
+  patch makes it possible to import such scripts, in case they're also
+  usable as modules.  (Implemented by David Bolen.)
+
+<P>
+</LI>
+<LI>On platforms where Python uses the C <tt class="cfunction">dlopen()</tt> function 
+  to load extension modules, it's now possible to set the flags used 
+  by <tt class="cfunction">dlopen()</tt> using the <tt class="function">sys.getdlopenflags()</tt> and
+  <tt class="function">sys.setdlopenflags()</tt> functions.    (Contributed by Bram Stolk.)
+
+<P>
+</LI>
+<LI>The <tt class="function">pow()</tt> built-in function no longer supports 3
+  arguments when floating-point numbers are supplied.
+  <code>pow(<var>x</var>, <var>y</var>, <var>z</var>)</code> returns <code>(x**y) % z</code>, but
+  this is never useful for floating point numbers, and the final
+  result varies unpredictably depending on the platform.  A call such
+  as <code>pow(2.0, 8.0, 7.0)</code> will now raise a <tt class="exception">TypeError</tt>
+  exception.
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A HREF="node11.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A HREF="whatsnew22.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A HREF="node13.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">What's New in Python 2.2</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" HREF="node11.html">10 Interpreter Changes and</A>
+<b class="navlabel">Up:</b> <a class="sectref" HREF="whatsnew22.html">What's New in Python</A>
+<b class="navlabel">Next:</b> <a class="sectref" HREF="node13.html">12 Acknowledgements</A>
+<hr>
+<span class="release-info">Release 1.00.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

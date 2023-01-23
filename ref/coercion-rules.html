@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>3.3.7 Coercion rules</title>
+<META NAME="description" CONTENT="3.3.7 Coercion rules">
+<META NAME="keywords" CONTENT="ref">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ref.css">
+<link rel="first" href="ref.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="previous" href="numeric-types.html">
+<LINK REL="up" href="specialnames.html">
+<LINK REL="next" href="execmodel.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="numeric-types.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="specialnames.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="execmodel.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="numeric-types.html">3.3.6 Emulating numeric types</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="specialnames.html">3.3 Special method names</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="execmodel.html">4. Execution model</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION005370000000000000000">&nbsp;</A>
+<BR>
+3.3.7 Coercion rules
+</H2>
+
+<P>
+This section used to document the rules for coercion.  As the language
+has evolved, the coercion rules have become hard to document
+precisely; documenting what one version of one particular
+implementation does is undesirable.  Instead, here are some informal
+guidelines regarding coercion.  In Python 3.0, coercion will not be
+supported.
+
+<P>
+
+<UL>
+<LI><P>
+If the left operand of a % operator is a string or Unicode object, no
+coercion takes place and the string formatting operation is invoked
+instead.
+
+<P>
+</LI>
+<LI><P>
+It is no longer recommended to define a coercion operation.
+Mixed-mode operations on types that don't define coercion pass the
+original arguments to the operation.
+
+<P>
+</LI>
+<LI><P>
+New-style classes (those derived from <tt class="class">object</tt>) never invoke the
+<tt class="method">__coerce__()</tt> method in response to a binary operator; the only
+time <tt class="method">__coerce__()</tt> is invoked is when the built-in function
+<tt class="function">coerce()</tt> is called.
+
+<P>
+</LI>
+<LI><P>
+For most intents and purposes, an operator that returns
+<code>NotImplemented</code> is treated the same as one that is not
+implemented at all.
+
+<P>
+</LI>
+<LI><P>
+Below, <tt class="method">__op__()</tt> and <tt class="method">__rop__()</tt> are used to signify
+the generic method names corresponding to an operator;
+<tt class="method">__iop__</tt> is used for the corresponding in-place operator.  For
+example, for the operator `<code>+</code>', <tt class="method">__add__()</tt> and
+<tt class="method">__radd__()</tt> are used for the left and right variant of the
+binary operator, and <tt class="method">__iadd__</tt> for the in-place variant.
+
+<P>
+</LI>
+<LI><P>
+For objects <var>x</var> and <var>y</var>, first <code><var>x</var>.__op__(<var>y</var>)</code>
+is tried.  If this is not implemented or returns <code>NotImplemented</code>,
+<code><var>y</var>.__rop__(<var>x</var>)</code> is tried.  If this is also not
+implemented or returns <code>NotImplemented</code>, a <tt class="exception">TypeError</tt>
+exception is raised.  But see the following exception:
+
+<P>
+</LI>
+<LI><P>
+Exception to the previous item: if the left operand is an instance of
+a built-in type or a new-style class, and the right operand is an
+instance of a proper subclass of that type or class, the right
+operand's <tt class="method">__rop__()</tt> method is tried <i>before</i> the left
+operand's <tt class="method">__op__()</tt> method.  This is done so that a subclass can
+completely override binary operators.  Otherwise, the left operand's
+__op__ method would always accept the right operand: when an instance
+of a given class is expected, an instance of a subclass of that class
+is always acceptable.
+
+<P>
+</LI>
+<LI><P>
+When either operand type defines a coercion, this coercion is called
+before that type's <tt class="method">__op__()</tt> or <tt class="method">__rop__()</tt> method is
+called, but no sooner.  If the coercion returns an object of a
+different type for the operand whose coercion is invoked, part of the
+process is redone using the new object.
+
+<P>
+</LI>
+<LI><P>
+When an in-place operator (like `<code>+=</code>') is used, if the left
+operand implements <tt class="method">__iop__()</tt>, it is invoked without any
+coercion.  When the operation falls back to <tt class="method">__op__()</tt> and/or
+<tt class="method">__rop__()</tt>, the normal coercion rules apply.
+
+<P>
+</LI>
+<LI><P>
+In <var>x</var><code>+</code><var>y</var>, if <var>x</var> is a sequence that implements
+sequence concatenation, sequence concatenation is invoked.
+
+<P>
+</LI>
+<LI><P>
+In <var>x</var><code>*</code><var>y</var>, if one operator is a sequence that
+implements sequence repetition, and the other is an integer
+(<tt class="class">int</tt> or <tt class="class">long</tt>), sequence repetition is invoked.
+
+<P>
+</LI>
+<LI><P>
+Rich comparisons (implemented by methods <tt class="method">__eq__()</tt> and so on)
+never use coercion.  Three-way comparison (implemented by
+<tt class="method">__cmp__()</tt>) does use coercion under the same conditions as
+other binary operations use it.
+
+<P>
+</LI>
+<LI><P>
+In the current implementation, the built-in numeric types <tt class="class">int</tt>,
+<tt class="class">long</tt> and <tt class="class">float</tt> do not use coercion; the type
+<tt class="class">complex</tt> however does use it.  The difference can become
+apparent when subclassing these types.  Over time, the type
+<tt class="class">complex</tt> may be fixed to avoid coercion.  All these types
+implement a <tt class="method">__coerce__()</tt> method, for use by the built-in
+<tt class="function">coerce()</tt> function.
+
+<P>
+</LI>
+</UL>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="numeric-types.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="specialnames.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="execmodel.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="numeric-types.html">3.3.6 Emulating numeric types</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="specialnames.html">3.3 Special method names</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="execmodel.html">4. Execution model</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>

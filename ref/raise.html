@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>6.9 The raise statement </title>
+<META NAME="description" CONTENT="6.9 The raise statement ">
+<META NAME="keywords" CONTENT="ref">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="STYLESHEET" href="ref.css">
+<link rel="first" href="ref.html">
+<link rel="contents" href="contents.html" title="Contents">
+<link rel="index" href="genindex.html" title="Index">
+<LINK REL="next" href="break.html">
+<LINK REL="previous" href="yield.html">
+<LINK REL="up" href="simple.html">
+<LINK REL="next" href="break.html">
+</head>
+<body>
+<DIV CLASS="navigation">
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="yield.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="simple.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="break.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="yield.html">6.8 The yield statement</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="simple.html">6. Simple statements</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="break.html">6.10 The break statement</A>
+<br><hr>
+</DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION008900000000000000000">&nbsp;</A>
+<BR>
+6.9 The <tt class="keyword">raise</tt> statement 
+</H1>
+<a name="l2h-343">&nbsp;</a>
+<P>
+<dl><dd class="grammar">
+<div class="productions">
+<table cellpadding="2">
+<tr valign="baseline">
+    <td><code><a name="tok-raise_stmt">raise_stmt</a></code></td>
+    <td>&nbsp;::=&nbsp;</td>
+    <td><code>"raise" [<a href="Booleans.html#tok-expression">expression</a> ["," <a href="Booleans.html#tok-expression">expression</a>
+              ["," <a href="Booleans.html#tok-expression">expression</a>]]]</code></td></tr>
+</table>
+</div>
+<a class="grammar-footer"
+  href="grammar.txt" type="text/plain"
+  >Download entire grammar as text.</a>
+</dd></dl>
+
+<P>
+If no expressions are present, <tt class="keyword">raise</tt> re-raises the last
+expression that was active in the current scope.  If no exception has
+been active in the current scope, an exception is raised that
+indicates indicates that this is the error.
+<a name="l2h-344">&nbsp;</a>
+<P>
+Otherwise, <tt class="keyword">raise</tt> evaluates the expressions to get three
+objects, using <code>None</code> as the value of omitted expressions.  The
+first two objects are used to determine the <i>type</i> and
+<i>value</i> of the exception.
+
+<P>
+If the first object is an instance, the type of the exception is the
+class of the instance, the instance itself if the value, and the
+second object must be <code>None</code>.
+
+<P>
+If the first object is a class, it becomes the type of the exception.
+The second object is used to determine the exception value: If it is
+an instance of the class, the instance becomes the exception value.
+If the second object is a tuple, it is used as the argument list for
+the class constructor; if it is <code>None</code>, an empty argument list is
+used, and any other object is treated as a single argument to the
+constructor.  The instance so created by calling the constructor is
+used as the exception value.
+
+<P>
+If the first object is a string, the string object is the exception
+type, and the second object becomes the exception value.
+
+<P>
+If a third object is present and not <code>None</code>, it must be a
+traceback<a name="l2h-345">&nbsp;</a>object (see section&nbsp;<A href="types.html#traceback">3.2</A>), and
+it is substituted instead of the current location as the place where
+the exception occurred.  If the third object is present and not a
+traceback object or <code>None</code>, a <tt class="exception">TypeError</tt> exception is
+raised.  The three-expression form of <tt class="keyword">raise</tt> is useful to
+re-raise an exception transparently in an except clause, but
+<tt class="keyword">raise</tt> with no expressions should be preferred if the
+exception to be re-raised was the most recently active exception in
+the current scope.
+
+<P>
+
+<DIV CLASS="navigation">
+<p><hr>
+<table align="center" width="100%" cellpadding="0" cellspacing="2">
+<tr>
+<td><A href="yield.html"><img src="../icons/previous.gif"
+  border="0" height="32"
+  alt="Previous Page" width="32"></A></td>
+<td><A href="simple.html"><img src="../icons/up.gif"
+  border="0" height="32"
+  alt="Up One Level" width="32"></A></td>
+<td><A href="break.html"><img src="../icons/next.gif"
+  border="0" height="32"
+  alt="Next Page" width="32"></A></td>
+<td align="center" width="100%">Python Reference Manual</td>
+<td><A href="contents.html"><img src="../icons/contents.gif"
+  border="0" height="32"
+  alt="Contents" width="32"></A></td>
+<td><img src="../icons/blank.gif"
+  border="0" height="32"
+  alt="" width="32"></td>
+<td><A href="genindex.html"><img src="../icons/index.gif"
+  border="0" height="32"
+  alt="Index" width="32"></A></td>
+</tr></table>
+<b class="navlabel">Previous:</b> <a class="sectref" href="yield.html">6.8 The yield statement</A>
+<b class="navlabel">Up:</b> <a class="sectref" href="simple.html">6. Simple statements</A>
+<b class="navlabel">Next:</b> <a class="sectref" href="break.html">6.10 The break statement</A>
+<hr>
+<span class="release-info">Release 2.2.2, documentation updated on October 14, 2002.</span>
+</DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+See <i><a href="about.html">About this document...</a></i> for information on suggesting changes.
+</ADDRESS>
+</BODY>
+</HTML>
